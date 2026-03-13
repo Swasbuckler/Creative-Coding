@@ -48,7 +48,7 @@ export default function Water({
     'yneg.png',
     'zpos.png', 
     'zneg.png',
-  ], {path: '/water-caustic/'});
+  ], {path: import.meta.env.VITE_PUBLIC_BASE_URL + '/water-caustic/'});
 
   useImperativeHandle(ref, () => {
     return {

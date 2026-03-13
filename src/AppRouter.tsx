@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import Menu from "./Menu";
 import HomePage from "./home/HomePage";
 import WaterCanvas from "./water/water-caustic/WaterCanvas";
@@ -7,7 +7,7 @@ import WaterPage from "./water/home/WaterPage";
 export default function AppRouter() {
 
   return (
-    <BrowserRouter basename="/Creative-Coding">
+    <BrowserRouter basename="/Creative-Coding/">
       <Routes>
         <Route path="/" element={<Menu />}>
           <Route index element={<HomePage />} />
@@ -15,6 +15,9 @@ export default function AppRouter() {
             <Route index element={<WaterPage />} />
             <Route path="water-caustic" element={<WaterCanvas />} />
           </Route>
+        </Route>
+        <Route path="*" element={<Navigate replace to="/" />}>
+          
         </Route>
       </Routes>
     </BrowserRouter>

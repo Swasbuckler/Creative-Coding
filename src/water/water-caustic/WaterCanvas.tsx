@@ -94,7 +94,7 @@ function Scene({
   const waterTexRef = useRef<THREE.WebGLRenderTarget>(null);
   const causticTexRef = useRef<THREE.WebGLRenderTarget>(null);
 
-  const wallTex = useTexture('/water-caustic/tiles.jpg');
+  const wallTex = useTexture(import.meta.env.VITE_PUBLIC_BASE_URL + '/water-caustic/tiles.jpg');
   wallTex.wrapS = THREE.RepeatWrapping;
   wallTex.wrapT = THREE.RepeatWrapping;
   wallTex.minFilter = THREE.LinearMipmapLinearFilter;
