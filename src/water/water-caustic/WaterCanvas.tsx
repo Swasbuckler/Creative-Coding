@@ -49,9 +49,9 @@ export default function WaterCanvas() {
       >
         <span className="text-xs italic">Additional Info</span>
         <ul className="list-disc pl-4">
-          <li>This render is based on Evan Wallace's work. Other than porting their render to a ThreeJS and React Three Fiber Environment, <span className="font-bold">I do not claim ownership over this render</span></li>
-          <li>The Shaders used for this render are from Evan Wallace with minor tweaks applied for them to function in ThreeJS</li>
-          <li>This Render is made atop of WebGL</li>
+          <li>This render is based on Evan Wallace's work. Other than porting their render to a ThreeJS and React Three Fiber Environment, <span className="font-bold">I do not claim ownership over this render.</span></li>
+          <li>The Shaders used for this render are from Evan Wallace with minor tweaks applied for them to function in ThreeJS.</li>
+          <li>This Render is made atop of WebGL.</li>
         </ul>
       </InfoBubble>
       <GitHubConnection 
