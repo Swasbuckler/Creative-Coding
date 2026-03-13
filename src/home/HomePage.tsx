@@ -8,7 +8,7 @@ export default function HomePage() {
         <span>Home Page. Click the button on the left to navigate this Website. *This Page is a Work in Progress</span>
       </div>
       <GitHubConnection
-        url="https://github.com/"
+        url="https://github.com/Swasbuckler/Creative-Coding/tree/main"
         position="BOTTOM_RIGHT"
         size={8}
         className="text-gray-400 hover:text-gray-200 hover:scale-110"

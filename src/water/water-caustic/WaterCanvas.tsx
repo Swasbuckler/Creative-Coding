@@ -55,7 +55,7 @@ export default function WaterCanvas() {
         </ul>
       </InfoBubble>
       <GitHubConnection 
-        url="https://github.com/"
+        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/water/water-caustic"
         position="BOTTOM_RIGHT"
         size={8}
         className="text-gray-400 hover:text-gray-200 hover:scale-110"

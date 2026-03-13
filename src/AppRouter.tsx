@@ -7,7 +7,7 @@ import WaterPage from "./water/home/WaterPage";
 export default function AppRouter() {
 
   return (
-    <BrowserRouter basename="/Creative-Coding/">
+    <BrowserRouter basename={import.meta.env.VITE_PUBLIC_BASE_URL + '/'}>
       <Routes>
         <Route path="/" element={<Menu />}>
           <Route index element={<HomePage />} />
@@ -16,9 +16,7 @@ export default function AppRouter() {
             <Route path="water-caustic" element={<WaterCanvas />} />
           </Route>
         </Route>
-        <Route path="*" element={<Navigate replace to="/" />}>
-          
-        </Route>
+        <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
     </BrowserRouter>
   );
