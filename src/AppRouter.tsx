@@ -7,7 +7,7 @@ import WaterPage from "./water/home/WaterPage";
 export default function AppRouter() {
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Creative-Coding">
       <Routes>
         <Route path="/" element={<Menu />}>
           <Route index element={<HomePage />} />
