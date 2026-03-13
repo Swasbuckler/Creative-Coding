@@ -5,13 +5,13 @@ import { useMemo } from "react";
 export default function GitHubConnection({
   url,
   position,
-  size,
+  size = 8,
   className,
   iconClassName,
 }: {
   url: string,
   position: StaticElementPosition,
-  size: number,
+  size?: number,
   className?: string,
   iconClassName?: string,
 }) {

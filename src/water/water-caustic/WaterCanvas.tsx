@@ -43,7 +43,6 @@ export default function WaterCanvas() {
       />
       <InfoBubble
         position="BOTTOM_LEFT"
-        size={8}
         className="text-gray-400 hover:text-gray-200 hover:scale-110"
         infoClassName="text-sm bg-gray-900 border-1 border-gray-500 rounded-sm p-2"
       >
@@ -57,7 +56,6 @@ export default function WaterCanvas() {
       <GitHubConnection 
         url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/water/water-caustic"
         position="BOTTOM_RIGHT"
-        size={8}
         className="text-gray-400 hover:text-gray-200 hover:scale-110"
       />
       <CanvasContainer 

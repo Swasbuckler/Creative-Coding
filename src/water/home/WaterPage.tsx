@@ -10,7 +10,6 @@ export default function WaterPage() {
       <GitHubConnection
         url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/water/home"
         position="BOTTOM_RIGHT"
-        size={8}
         className="text-gray-400 hover:text-gray-200 hover:scale-110"
       />
     </div>
