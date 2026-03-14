@@ -116,5 +116,5 @@ function setupGui({
 }: {
   gui: GUI,
 }) {
-
+  gui.addFolder('WIP');
 }
