@@ -1,6 +1,6 @@
 'use client';
 
-import { OrbitControls, Stats, useTexture } from "@react-three/drei";
+import { Html, OrbitControls, Stats, useTexture } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from 'three';
@@ -146,7 +146,7 @@ function Scene({
   return (
     <Suspense 
       key={resize} 
-      fallback={<div>Loading...</div>}
+      fallback={<Html center>Loading...</Html>}
     >
       <group>
         <mesh 

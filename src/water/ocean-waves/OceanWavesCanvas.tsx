@@ -1,4 +1,4 @@
-import { OrbitControls, Stats } from "@react-three/drei";
+import { Html, OrbitControls, Stats } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
 import { Suspense, useEffect, useRef, useState, type RefObject } from "react";
@@ -99,7 +99,7 @@ function Scene({
   return (
     <Suspense
       key={resize} 
-      fallback={<div>Loading...</div>}
+      fallback={<Html center>Loading...</Html>}
     >
       <group>
         <mesh>
