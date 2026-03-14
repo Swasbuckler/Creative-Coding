@@ -14,6 +14,7 @@ import { lightDir, sphereCenter, sphereRadius } from "./constants";
 import GitHubConnection from "../../lib/components/GitHubConnection";
 import ThreeJSElementContainer from "../../lib/components/ThreeJSElementContainer";
 import InfoBubble from "../../lib/components/InfoBubble";
+import ThreeJSSuspenseElement from "../../lib/components/ThreeJSSuspenseElement";
 
 export default function WaterCausticCanvas() {
 
@@ -146,7 +147,7 @@ function Scene({
   return (
     <Suspense 
       key={resize} 
-      fallback={<Html center>Loading...</Html>}
+      fallback={<ThreeJSSuspenseElement />}
     >
       <group>
         <mesh 
