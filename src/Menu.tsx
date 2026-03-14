@@ -10,7 +10,11 @@ const navLinkGroup: NavLinkGroup = {
     {
       path: 'water-caustic',
       label: 'Water Caustic (Based on Evanw)'
-    }
+    },
+    {
+      path: 'ocean-waves',
+      label: 'Ocean Waves'
+    },
   ]
 }
 

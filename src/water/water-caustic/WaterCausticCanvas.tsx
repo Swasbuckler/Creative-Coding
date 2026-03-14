@@ -15,7 +15,7 @@ import GitHubConnection from "../../lib/components/GitHubConnection";
 import ThreeJSElementContainer from "../../lib/components/ThreeJSElementContainer";
 import InfoBubble from "../../lib/components/InfoBubble";
 
-export default function WaterCanvas() {
+export default function WaterCausticCanvas() {
 
   const statsParentRef = useRef<HTMLDivElement>(document.createElement('div'));
   const guiParentRef = useRef<HTMLDivElement>(document.createElement('div'));
