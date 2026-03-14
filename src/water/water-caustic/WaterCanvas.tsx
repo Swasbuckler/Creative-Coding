@@ -26,7 +26,7 @@ export default function WaterCanvas() {
         ref={statsParentRef}
         position="TOP_LEFT"
       />
-      <div className="absolute left-1/2 transform -translate-x-1/2 w-1/4 text-center text-sm z-10">
+      <div className="absolute left-1/2 bottom-1 transform transition-all -translate-x-1/2 w-3/4 text-center text-xs sm:text-sm z-10">
         Simulation shown is based on the work of&nbsp;
         <a 
           className="text-blue-500 no-underline visited:text-purple-500 hover:underline" 
@@ -44,10 +44,10 @@ export default function WaterCanvas() {
       <InfoBubble
         position="BOTTOM_LEFT"
         className="text-gray-400 hover:text-gray-200 hover:scale-110"
-        infoClassName="text-sm bg-gray-900 border-1 border-gray-500 rounded-sm p-2"
+        infoClassName="text-xs sm:text-sm bg-gray-900 border-1 border-gray-500 rounded-sm p-2"
       >
         <span className="text-xs italic">Additional Info</span>
-        <ul className="list-disc pl-4">
+        <ul className="list-disc pl-4 [&>li]:mb-1">
           <li>This render is based on Evan Wallace's work. Other than porting their render to a ThreeJS and React Three Fiber Environment, <span className="font-bold">I do not claim ownership over this render.</span></li>
           <li>The Shaders used for this render are from Evan Wallace with minor tweaks applied for them to function in ThreeJS.</li>
           <li>This Render is made atop of WebGL.</li>
@@ -75,7 +75,10 @@ function CanvasContainer({
 }) {
 
   return (
-    <Canvas camera={{ position: [0, 1, 3] }}>
+    <Canvas 
+      camera={{ position: [0, 1, 3] }}
+      resize={{ debounce: 250 }}
+    >
       <Scene guiParentRef={guiParentRef} />
       <OrbitControls />
       <Stats parent={statsParentRef} />
@@ -108,7 +111,7 @@ function Scene({
   const lightRotationRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
   const spherePositionRef = useRef<THREE.Vector3>(sphereCenter.clone());
   const physicsPauseRef = useRef<Paused>({paused: false});
-  const addDropsRef = useRef<AddDrops>({numOfDrops: 0});
+  const addDropsRef = useRef<AddDrops>({numOfDrops: 0, trigger: false});
 
   const waterRef = useRef<any>(null);
 
@@ -141,7 +144,10 @@ function Scene({
   }, []);
 
   return (
-    <Suspense key={resize} fallback={<div>Loading...</div>}>
+    <Suspense 
+      key={resize} 
+      fallback={<div>Loading...</div>}
+    >
       <group>
         <mesh 
           ref={sphereMesh}
@@ -182,7 +188,6 @@ function Scene({
         </mesh>
       </group>
       <Water 
-        ref={waterRef}
         waterTexRef={waterTexRef}
         causticTexRef={causticTexRef}
         wallTex={wallTex}
@@ -208,7 +213,6 @@ function setupGui({
   sphereMesh,
   physicsPauseRef,
   addDropsRef,
-  waterRef,
 }: {
   gui: GUI,
   lightRotationRef: RefObject<THREE.Vector3>,
@@ -277,7 +281,7 @@ function setupGui({
   const dropletFolder = gui.addFolder('Droplet Controls');
   dropletFolder.add(addDropsRef.current, 'numOfDrops', 0, 20, 1)
     .name('Number of Drops');
-  dropletFolder.add({addDropTrigger: waterRef.current.handleAddDrops}, 'addDropTrigger')
+  dropletFolder.add({addDropTrigger: () => addDropsRef.current.trigger = true}, 'addDropTrigger')
     .name('Add Drops');
 }
 

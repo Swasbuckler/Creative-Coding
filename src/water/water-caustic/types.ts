@@ -4,4 +4,5 @@ export type Paused = {
 
 export type AddDrops = {
   numOfDrops: number;
+  trigger: boolean;
 };

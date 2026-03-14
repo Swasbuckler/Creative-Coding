@@ -45,7 +45,7 @@ function NavBar({
 }) {
 
   return (
-    <div className="flex flex-col w-50 h-full **:truncate **:text-sm bg-gray-900 border-r-2 border-gray-500 p-2">
+    <div className="flex flex-col w-40 sm:w-50 transform transition-all h-full **:truncate **:text-sm bg-gray-900 border-r-2 border-gray-500 p-2">
       <div className="flex justify-between pb-1.25">
         <span className="font-lobster">Creative Coding {'{.}'}</span>
         <IconX 

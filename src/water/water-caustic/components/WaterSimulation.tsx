@@ -2,7 +2,7 @@
 
 import { useFBO } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useImperativeHandle, useRef, type RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import * as THREE from 'three';
 import { fixedTimeStep, waterResolution, waterSize } from '../constants';
 import { dropFragmentShader, moveSphereFragmentShader, normalFragmentShader, updateFragmentShader, waterSimulationVertexShader } from '../shaders/water-simulation';
@@ -10,7 +10,6 @@ import { causticsFragmentShader, causticsVertexShader } from '../shaders/caustic
 import type { AddDrops, Paused } from '../types';
 
 export default function WaterSimulation({
-  ref,
   waterAboveMesh,
   waterUnderMesh,
   waterTexRef,
@@ -24,7 +23,6 @@ export default function WaterSimulation({
   physicsPauseRef,
   addDropsRef,
 }: {
-  ref: RefObject<any>,
   waterAboveMesh: RefObject<THREE.Mesh | null>,
   waterUnderMesh: RefObject<THREE.Mesh | null>,
   waterTexRef: RefObject<THREE.WebGLRenderTarget | null>,
@@ -183,6 +181,11 @@ export default function WaterSimulation({
     moveSphereMesh.current!.visible = false;
     causticMesh.current!.visible = false;
 
+    if (addDropsRef.current.trigger) {
+      addDropsRef.current.trigger = false;
+      addDrops(gl, camera, addDropsRef.current.numOfDrops);
+    }
+
     if (!physicsPauseRef.current.paused) {
       accumulator.current += delta;
 
@@ -211,18 +214,10 @@ export default function WaterSimulation({
     addDrops(gl, camera, 20);
   }, []);
 
-  useImperativeHandle(ref, () => {
-    return {
-      handleAddDrops() {
-        addDrops(gl, camera, addDropsRef.current.numOfDrops);
-      }
-    };
-  });
-
   return (
     <>
       <group>
-        <mesh ref={dropMesh} visible={false}>
+        <mesh ref={dropMesh}>
           <RenderTargetGeometry />
           <rawShaderMaterial 
             uniforms={{
@@ -235,7 +230,7 @@ export default function WaterSimulation({
             fragmentShader={dropFragmentShader}
           />
         </mesh>
-        <mesh ref={updateMesh} visible={false}>
+        <mesh ref={updateMesh}>
           <RenderTargetGeometry />
           <rawShaderMaterial 
             uniforms={{
@@ -246,7 +241,7 @@ export default function WaterSimulation({
             fragmentShader={updateFragmentShader}
           />
         </mesh>
-        <mesh ref={normalMesh} visible={false}>
+        <mesh ref={normalMesh}>
           <RenderTargetGeometry />
           <rawShaderMaterial 
             uniforms={{
@@ -257,7 +252,7 @@ export default function WaterSimulation({
             fragmentShader={normalFragmentShader}
           />
         </mesh>
-         <mesh ref={moveSphereMesh} visible={false}>
+         <mesh ref={moveSphereMesh}>
           <RenderTargetGeometry />
           <rawShaderMaterial 
             uniforms={{
@@ -274,7 +269,6 @@ export default function WaterSimulation({
       <mesh 
         ref={causticMesh}
         position={[0.0, 2.0, 0.0]} 
-        visible={false}
       >
         <planeGeometry args={[waterSize, waterSize, waterResolution, waterResolution]} />
         <rawShaderMaterial 

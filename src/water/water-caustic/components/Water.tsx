@@ -1,7 +1,7 @@
 'use client';
 
 import * as THREE from 'three';
-import { useImperativeHandle, useRef, type RefObject } from "react"
+import { useRef, type RefObject } from "react"
 import { waterResolution, waterSize } from '../constants';
 import { waterAboveFragmentShader, waterUnderFragmentShader, waterVertexShader } from '../shaders/water';
 import WaterSimulation from './WaterSimulation';
@@ -9,7 +9,6 @@ import { useCubeTexture } from '@react-three/drei';
 import type { AddDrops, Paused } from '../types';
 
 export default function Water({
-  ref,
   waterTexRef,
   causticTexRef,
   wallTex,
@@ -22,7 +21,6 @@ export default function Water({
   physicsPauseRef,
   addDropsRef,
 }: {
-  ref: RefObject<any>,
   waterTexRef: RefObject<THREE.WebGLRenderTarget | null>,
   causticTexRef: RefObject<THREE.WebGLRenderTarget | null>,
   wallTex: THREE.Texture,
@@ -39,8 +37,6 @@ export default function Water({
   const waterAboveMesh = useRef<THREE.Mesh>(null);
   const waterUnderMesh = useRef<THREE.Mesh>(null);
 
-  const waterSimulationRef = useRef<any>(null);
-
   const skybox = useCubeTexture([
     'xpos.png',
     'xneg.png', 
@@ -49,14 +45,6 @@ export default function Water({
     'zpos.png', 
     'zneg.png',
   ], {path: import.meta.env.VITE_PUBLIC_BASE_URL + '/water-caustic/'});
-
-  useImperativeHandle(ref, () => {
-    return {
-      handleAddDrops() {
-        waterSimulationRef.current.handleAddDrops();
-      }
-    };
-  });
 
   return (
     <>
@@ -97,7 +85,6 @@ export default function Water({
         </mesh>
       </group>
       <WaterSimulation
-        ref={waterSimulationRef}
         waterAboveMesh={waterAboveMesh}
         waterUnderMesh={waterUnderMesh}
         waterTexRef={waterTexRef}
