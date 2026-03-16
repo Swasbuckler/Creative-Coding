@@ -1,6 +1,6 @@
 'use client';
 
-import { Html, OrbitControls, Stats, useTexture } from "@react-three/drei";
+import { OrbitControls, Stats, useTexture } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from 'three';
@@ -8,7 +8,7 @@ import Water from "./components/Water";
 import { sphereFragmentShader, sphereVertexShader } from "./shaders/sphere";
 import { wallFragmentShader, wallVertexShader } from "./shaders/wall";
 import GUI from "lil-gui";
-import { createRotationXMatrix3, createRotationYMatrix3, createRotationZMatrix3, dotProductMatrix3Vector } from "../../lib/MathUtils";
+import { createRotationXMatrix3, createRotationYMatrix3, createRotationZMatrix3, dotProductMatrix3Vector } from "../../lib/utils/mathUtils";
 import type { AddDrops, Paused } from "./types";
 import { lightDir, sphereCenter, sphereRadius } from "./constants";
 import GitHubConnection from "../../lib/components/GitHubConnection";

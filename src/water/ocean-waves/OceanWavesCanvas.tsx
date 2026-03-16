@@ -1,14 +1,13 @@
 import { OrbitControls, Stats } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
-import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { Suspense, useEffect, useRef, useState, type RefObject } from "react";
 import GitHubConnection from "../../lib/components/GitHubConnection";
 import InfoBubble from "../../lib/components/InfoBubble";
 import ThreeJSElementContainer from "../../lib/components/ThreeJSElementContainer";
 import * as THREE from 'three/webgpu';
 import type { WebGPURendererParameters } from "three/src/renderers/webgpu/WebGPURenderer.Nodes.js";
 import ThreeJSSuspenseElement from "../../lib/components/ThreeJSSuspenseElement";
-import { Octree } from "three/examples/jsm/Addons.js";
 
 export default function OceanWavesCanvas() {
 
@@ -108,6 +107,7 @@ function Scene({
           <boxGeometry />
           <meshBasicMaterial color="white" />
         </mesh>
+        <Ocean />
       </group>
     </Suspense>
   );

@@ -1,5 +1,5 @@
 import { IconBrandGithub } from "@tabler/icons-react";
-import type { StaticElementPosition } from "../types";
+import type { StaticElementPosition } from "../utils/types";
 import { useMemo } from "react";
 
 export default function GitHubConnection({

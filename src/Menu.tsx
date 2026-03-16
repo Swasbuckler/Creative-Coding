@@ -1,7 +1,7 @@
 import { IconChevronRight, IconLayoutSidebarLeftExpandFilled, IconX } from "@tabler/icons-react";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { NavLink, Outlet, useMatch } from "react-router";
-import type { NavLinkGroup } from "./lib/types";
+import type { NavLinkGroup } from "./lib/utils/types";
 
 const navLinkGroup: NavLinkGroup = {
   path: 'water',

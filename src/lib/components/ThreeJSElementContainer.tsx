@@ -1,5 +1,5 @@
 import { useMemo, type RefObject } from "react";
-import type { ThreeJSElementPosition } from "../types";
+import type { ThreeJSElementPosition } from "../utils/types";
 
 export default function ThreeJSElementContainer({
   ref,

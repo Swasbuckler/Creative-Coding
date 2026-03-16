@@ -1,5 +1,5 @@
 import { IconInfoCircle } from "@tabler/icons-react";
-import type { StaticElementPosition } from "../types";
+import type { StaticElementPosition } from "../utils/types";
 import { useMemo, useRef, useState } from "react";
 import useClickOutside from "../hooks/useClickOutside";
 
