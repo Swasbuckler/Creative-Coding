@@ -1,13 +1,14 @@
 import { OrbitControls, Stats } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
-import { Suspense, useEffect, useRef, useState, type RefObject } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import GitHubConnection from "../../lib/components/GitHubConnection";
 import InfoBubble from "../../lib/components/InfoBubble";
 import ThreeJSElementContainer from "../../lib/components/ThreeJSElementContainer";
 import * as THREE from 'three/webgpu';
 import type { WebGPURendererParameters } from "three/src/renderers/webgpu/WebGPURenderer.Nodes.js";
 import ThreeJSSuspenseElement from "../../lib/components/ThreeJSSuspenseElement";
+import { QuadNode, QuadTree, QuadTreeHelper, QuadTreeSetter } from "../../lib/utils/quadTree";
 
 export default function OceanWavesCanvas() {
 
@@ -78,24 +79,87 @@ function Scene({
   guiParentRef: RefObject<HTMLDivElement>
 }) {
   const [resize, setResize] = useState(0);
+  const [updateQuadTree, setUpdateQuadTree] = useState(0);
   
   const { size } = useThree();
   
-  useEffect(() => {
-    setResize((value) => value + 1);
-  }, [size])
+  const quadTreeRef = useRef<QuadTree>(new QuadTree({
+    boundary: new QuadNode(0, 0, 100, 100),
+    capacity: 4,
+    maxDepth: 3
+  }));
+
+  const objectsRef = useRef<(THREE.Mesh | null)[]>([]);
+  const raycaster = useRef<THREE.Raycaster>(new THREE.Raycaster());
+
+  const mousePointPlane = useRef<THREE.Mesh>(null);
+  const nodeArea = useRef<QuadNode>(new QuadNode(0, 0, 5, 5));
+  const nodeAreaMesh = useRef<THREE.Mesh>(null);
+
+  const testObjectRange: {x: number, y: number, rotation: number}[] = useMemo(() => {
+    return Array.from({ length: 1000 }, () => {
+      const randPositionX = Math.random() * 45 * Math.sign(Math.random() - 0.5);
+      const randPositionY = Math.random() * 45 * Math.sign(Math.random() - 0.5);;
+      const randRotation = Math.random() * Math.PI;
+
+      return {x: randPositionX, y: randPositionY, rotation: randRotation};
+    });
+  }, []);
+
+  const {whiteColor, redColor} = useMemo(() => {
+    return {
+      whiteColor: new THREE.Color('white'),
+      redColor: new THREE.Color('red'),
+    };
+  }, []);
   
   useEffect(() => {
+    setResize((value) => value + 1);
+  }, [size]);
+  
+  useEffect(() => {
+
+    setUpdateQuadTree((value) => value + 1);
   
     const gui = new GUI({container: guiParentRef.current});
     setupGui({
       gui,
     });
-  
+
     return () => {
       gui.destroy();
     }
   }, []);
+
+  useFrame((state) => {
+
+    objectsRef.current.forEach((object) => {
+      if (object) {
+        (object.material as THREE.MeshBasicMaterial).color = whiteColor;
+      }
+    })
+
+    raycaster.current.setFromCamera(state.pointer, state.camera);
+
+    if (mousePointPlane.current && nodeAreaMesh.current) {
+      const intersect = raycaster.current.intersectObject(mousePointPlane.current);
+
+      if (intersect.length > 0) {
+        nodeArea.current.setData({
+          x: intersect[0].point.x, 
+          y: intersect[0].point.z, 
+        });
+
+        nodeAreaMesh.current.position.set(intersect[0].point.x, 0, intersect[0].point.z); 
+
+        const objectList = quadTreeRef.current.searchArea(nodeArea.current);
+        objectList.forEach((object) => {
+          (object.material as THREE.MeshBasicMaterial).color = redColor;
+        })
+        //console.log(objectRefs.current.filter((objectRef) => quadTree.current.extractObjects().find((object) => object.object!.uuid === objectRef?.uuid)));
+      }
+    }
+  });
   
   return (
     <Suspense
@@ -103,11 +167,53 @@ function Scene({
       fallback={<ThreeJSSuspenseElement />}
     >
       <group>
-        <mesh>
-          <boxGeometry />
-          <meshBasicMaterial color="white" />
+        <mesh 
+          ref={mousePointPlane}
+          position={[quadTreeRef.current.boundary.x, 0, quadTreeRef.current.boundary.y]}
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
+          <planeGeometry args={[quadTreeRef.current.boundary.width, quadTreeRef.current.boundary.height]} />
+          <meshBasicMaterial
+            color="white"
+            wireframe
+          />
         </mesh>
+        <mesh 
+          ref={nodeAreaMesh}
+          position={[nodeArea.current.x, 0, nodeArea.current.y]}
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
+          <planeGeometry args={[nodeArea.current.width, nodeArea.current.height]} />
+          <meshBasicMaterial
+            color="white"
+          />
+        </mesh>
+        {testObjectRange.map((data, index) => {            
+          return (
+            <mesh 
+              ref={(ref) => objectsRef.current[index] = ref} 
+              key={index}
+              position={[data.x, 0, data.y]}
+              rotation={[0, data.rotation, 0]}
+            >
+              <boxGeometry />
+              <meshBasicMaterial color="white" />
+            </mesh>
+          );
+        })}
         <Ocean />
+        <QuadTreeSetter
+          quadTreeRef={quadTreeRef}
+          objectsRef={objectsRef}
+          updateQuadTree={updateQuadTree}
+        />
+        <QuadTreeHelper 
+          quadTree={quadTreeRef.current}
+          y={0}
+          boundaryColor="white"
+          objectBoundaryColor="green"
+          updateQuadTree={updateQuadTree}
+        />
       </group>
     </Suspense>
   );
