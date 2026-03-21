@@ -172,58 +172,6 @@ export class QuadTree {
     return extractedObjects;
   }
 
-  draw(y: number, boundaryColor: string, objectBoundaryColor: string, index: number): JSX.Element {
-
-    const x = this.boundary.x;
-    const z = this.boundary.y;
-    const width = this.boundary.width;
-    const height = this.boundary.height;
-
-    const halfPI = Math.PI / 2;
-
-    const blue = new THREE.Color('blue');
-    
-    return (
-      <group key={index}>
-        {!this.divided && 
-          <mesh 
-            position={[x, y, z]} 
-            rotation={[halfPI, 0, 0]}
-          >
-            <planeGeometry args={[width, height, 1, 1]} />
-            <meshBasicMaterial 
-              color={boundaryColor}
-              wireframe
-            />
-          </mesh>
-        }
-        {this.objects.map((objectBoundingBox, index) => {
-          
-          (objectBoundingBox.object!.material as THREE.MeshBasicMaterial).color = blue;
-
-          const objectPosition = objectBoundingBox.object!.position;
-          const objectWidth = Math.abs(objectBoundingBox.max.x - objectBoundingBox.min.x);
-          const objectHeight = Math.abs(objectBoundingBox.max.z - objectBoundingBox.min.z);
-
-          return (
-            <mesh 
-              key={index}
-              position={[objectPosition.x, y, objectPosition.z]}
-              rotation={[halfPI, 0, 0]}
-            >
-              <planeGeometry args={[objectWidth, objectHeight, 1, 1]} />
-              <meshBasicMaterial 
-                color={objectBoundaryColor}
-                wireframe
-              />
-            </mesh>
-          );
-        })}
-        {this.childrenNodes.map((childrenNode, index) => childrenNode.draw(y, boundaryColor, objectBoundaryColor, index))}
-      </group>
-    )
-  }
-
 }
 
 export class QuadNode {
