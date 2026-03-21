@@ -28,7 +28,7 @@ export default function WaterCausticCanvas() {
         position="TOP_LEFT"
       />
       <div className="absolute left-1/2 bottom-1 transform transition-all -translate-x-1/2 w-3/4 text-center text-xs sm:text-sm z-10">
-        Simulation shown is based on the work of&nbsp;
+        Simulation shown is a Port of the work of&nbsp;
         <a 
           className="text-blue-500 no-underline visited:text-purple-500 hover:underline" 
           href="https://github.com/evanw/webgl-water"
@@ -49,8 +49,8 @@ export default function WaterCausticCanvas() {
       >
         <span className="text-xs italic">Additional Info</span>
         <ul className="list-disc pl-4 [&>li]:mb-1">
-          <li>This render is based on Evan Wallace's work. Other than porting their render to a ThreeJS and React Three Fiber Environment, <span className="font-bold">I do not claim ownership over this render.</span></li>
-          <li>The Shaders used for this render are from Evan Wallace with minor tweaks applied for them to function in ThreeJS.</li>
+          <li>This render is a Port of Evan Wallace's work. Other than porting their render to a ThreeJS and React Three Fiber Environment, <span className="font-bold">I do not claim ownership over this render.</span></li>
+          <li>The Shaders used for this render are from Evan Wallace with minor tweaks applied to allow them to function as intended in ThreeJS.</li>
           <li>This Render is made atop of WebGL.</li>
         </ul>
       </InfoBubble>
