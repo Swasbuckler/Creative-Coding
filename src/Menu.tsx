@@ -3,20 +3,32 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { NavLink, Outlet, useMatch } from "react-router";
 import type { NavLinkGroup } from "./lib/utils/types";
 
-const navLinkGroup: NavLinkGroup = {
-  path: 'water',
-  label: 'Water',
-  children: [
-    {
-      path: 'water-caustic',
-      label: 'Water Caustic (Port of Evanw)'
-    },
-    {
-      path: 'ocean-waves',
-      label: 'Ocean Waves'
-    },
-  ]
-}
+const navLinkGroups: NavLinkGroup[] = [
+  {
+    path: 'water',
+    label: 'Water',
+    children: [
+      {
+        path: 'water-caustic',
+        label: 'Water Caustic (Port of Evanw)',
+      },
+      {
+        path: 'ocean-waves',
+        label: 'Ocean Waves',
+      },
+    ]
+  },
+  {
+    path: 'tests',
+    label: 'Tests',
+    children: [
+      {
+        path: 'quadtree',
+        label: 'Quad Tree',
+      }
+    ]
+  }
+];
 
 export default function Menu() {
 
@@ -64,10 +76,13 @@ function NavBar({
       >
         Home
       </NavLink>
-      <DropDownNav
-        navLinkGroup={navLinkGroup}
-        index={0}
-      />
+      {navLinkGroups.map((navLinkGroup, index) => (
+        <DropDownNav
+          key={index}
+          navLinkGroup={navLinkGroup}
+          index={0}
+        />
+      ))}
     </div>
   );
 }
@@ -91,16 +106,16 @@ function DropDownNav({
   }, [isActive]);
 
   return (
-    <div className={`${navLinkGroup.className ? ` ${navLinkGroup.className}`: ''}`}>
+    <div className={`transform transition-all ease-in-out${navLinkGroup.className ? ` ${navLinkGroup.className}`: ''}`}>
       <NavLink 
-        className="relative block cursor-pointer hover:underline"
+        className="relative block cursor-pointer hover:underline transform transition-all ease-in-out"
         to={navLinkGroup.path}
         title={navLinkGroup.label}
       >
         <span>{navLinkGroup.label}</span>
         <IconChevronRight className={`absolute top-0 right-0 size-5 transform transition-all ease-in-out${isDropDown ? ' rotate-90' : ''}`} />
       </NavLink>
-      <div className={`flex flex-col transform transition-[max-height] duration-500 ease-in-out overflow-hidden${isDropDown ? ' max-h-full': ' max-h-0 pointer-events-none'}`}>
+      <div className={`flex flex-col transform transition-all duration-500 ease-in-out overflow-hidden${isDropDown ? ' max-h-30': ' max-h-0 pointer-events-none'}`}>
         {navLinkGroup.children?.map((navLinkItem, idx) => {
           return navLinkItem.children ? 
             <DropDownNav
@@ -114,7 +129,7 @@ function DropDownNav({
             />
           : <NavLink
               key={idx}
-              className={`${navLinkItem.className ? `${navLinkItem.className} hover:underline` : 'hover:underline'}`}
+              className={`transform transition-all ease-in-out hover:underline${navLinkItem.className ? `${navLinkItem.className}` : ''}`}
               to={`${navLinkGroup.path}/${navLinkItem.path}`}
               title={navLinkItem.label}
             >

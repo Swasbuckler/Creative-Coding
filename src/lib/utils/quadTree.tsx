@@ -1,17 +1,17 @@
 import * as THREE from 'three';
-import type { ObjectBoudingBox } from './types';
-import { useEffect, useMemo, useRef, type JSX, type RefObject } from 'react';
+import { useMemo } from 'react';
 
 export class QuadTree {
 
   boundary: QuadNode;
   capacity: number;
-  objects: ObjectBoudingBox[] = [];
+  objects: ObjectBoundingBox[] = [];
   childrenNodes: QuadTree[] = [];
   childrenNodeSizes: QuadNode[] = [];
   divided: boolean = false;
   depth: number = 0;
   maxDepth?: number;
+  parentNode?: QuadTree; 
 
   constructor(
     params: {
@@ -19,18 +19,20 @@ export class QuadTree {
       capacity: number,
       depth?: number,
       maxDepth?: number,
+      parentNode?: QuadTree,
     }
   ) {
     this.boundary = params.boundary;
     this.capacity = params.capacity;
     this.depth = params.depth ? params.depth : 0;
     this.maxDepth = params.maxDepth ? params.maxDepth : undefined;
+    this.parentNode = params.parentNode ? params.parentNode : undefined;
 
     this.resize(this.boundary);
   }
 
   insert(obj: THREE.Mesh): boolean {
-    const boundingBox: ObjectBoudingBox = new THREE.Box3();
+    const boundingBox: ObjectBoundingBox = new THREE.Box3();
     boundingBox.setFromObject(obj);
     boundingBox.object = obj;
     
@@ -55,7 +57,9 @@ export class QuadTree {
         
       }
     }
-
+    
+    boundingBox.parentNode = this;
+    boundingBox.index = this.objects.length;
     this.objects.push(boundingBox);
 
     return true;
@@ -76,17 +80,17 @@ export class QuadTree {
     return foundBox;
   }
 
-  searchArea(node: QuadNode): THREE.Mesh[] {
+  searchArea(node: QuadNode): ObjectBoundingBox[] {
 
-    let objectList: THREE.Mesh[] = [];
+    let objectList: ObjectBoundingBox[] = [];
 
     if (!this.boundary.intersectsNode(node)) {
       return objectList;
     }
 
     this.objects.forEach((objectBoundingBox) => {
-      if (this.boundary.intersectsObject(objectBoundingBox)) {
-        objectList.push(objectBoundingBox.object!);
+      if (node.intersectsObject(objectBoundingBox)) {
+        objectList.push(objectBoundingBox);
       };
     });
 
@@ -100,14 +104,30 @@ export class QuadTree {
 
   }
 
-  size() {
-    let objectCount = this.objects.length;
+  remove(boundingBox: ObjectBoundingBox): ObjectBoundingBox | null {
 
-    this.childrenNodes.forEach((childrenNode) => {
-      objectCount += childrenNode.size();
-    });
+    const parentNode = boundingBox.parentNode!;
 
-    return objectCount;
+    if (parentNode.objects[boundingBox.index!]) {
+      if (parentNode.objects[boundingBox.index!].object!.uuid === boundingBox.object!.uuid) {
+        parentNode.objects.splice(boundingBox.index!, 1);
+        
+        parentNode.reindex();
+        parentNode.merge();
+        
+        return boundingBox;
+      }
+    }
+
+    parentNode.reindex();
+
+    return null;
+  }
+
+  reindex() {
+    this.objects.forEach((boundingBox, index) => {
+      boundingBox.index = index;
+    })
   }
 
   resize(boundary: QuadNode) {
@@ -154,6 +174,7 @@ export class QuadTree {
         capacity: this.capacity,
         depth: this.depth + 1,
         maxDepth: this.maxDepth,
+        parentNode: this,
       }));
     });
 
@@ -162,7 +183,63 @@ export class QuadTree {
     return true;
   }
 
-  extractObjects(): ObjectBoudingBox[] {
+  merge(): boolean {
+    let canMerge = false;
+
+    const extractedObjects = this.extractObjects();
+    if (extractedObjects.length <= this.capacity) {
+      canMerge = true;
+    }
+
+    if (!canMerge) {
+      return false;
+    }
+
+    if (this.parentNode) {
+      const extractedObjects: ObjectBoundingBox[] = this.parentNode.extractObjects();
+
+      if (extractedObjects.length <= this.capacity) {
+        const hasMerged = this.parentNode.merge();
+        if (!hasMerged) {
+          this.clear();
+          
+          extractedObjects.forEach((objectBoundingBox, index) => {
+            objectBoundingBox.parentNode = this;
+            objectBoundingBox.index = index;
+            this.objects.push(objectBoundingBox);
+          });
+        }
+
+        return true;
+      }
+    }
+
+    if (this.divided) {
+      this.clear();
+
+      extractedObjects.forEach((objectBoundingBox, index) => {
+        objectBoundingBox.parentNode = this;
+        objectBoundingBox.index = index;
+        this.objects.push(objectBoundingBox);
+      });
+
+      return true;
+    }
+
+    return false;
+  }
+
+  size() {
+    let objectCount = this.objects.length;
+
+    this.childrenNodes.forEach((childrenNode) => {
+      objectCount += childrenNode.size();
+    });
+
+    return objectCount;
+  }
+
+  extractObjects(): ObjectBoundingBox[] {
     const extractedObjects = [...this.objects];
 
     this.childrenNodes.forEach((childrenNode) => {
@@ -170,6 +247,26 @@ export class QuadTree {
     });
 
     return extractedObjects;
+  }
+
+  sizeNodes() {
+    let nodeCount = 1;
+
+    this.childrenNodes.forEach((childrenNode) => {
+      nodeCount += childrenNode.sizeNodes();
+    });
+
+    return nodeCount;
+  }
+
+  extractNodes(): QuadTree[] {
+    const extractedNodes: QuadTree[] = [this];
+
+    this.childrenNodes.forEach((childrenNode) => {
+      extractedNodes.push(...childrenNode.extractNodes());
+    });
+
+    return extractedNodes;
   }
 
 }
@@ -227,7 +324,7 @@ export class QuadNode {
     }
   }
 
-  containsObject(boundingBox: ObjectBoudingBox): boolean {
+  containsObject(boundingBox: ObjectBoundingBox): boolean {
     const objBoundaryMin = boundingBox.min;
     const objBoundaryMax = boundingBox.max;
 
@@ -248,7 +345,7 @@ export class QuadNode {
     );
   }
   
-  intersectsObject(boundingBox: ObjectBoudingBox) {
+  intersectsObject(boundingBox: ObjectBoundingBox) {
     const objBoundaryMin = boundingBox.min;
     const objBoundaryMax = boundingBox.max;
 
@@ -296,70 +393,44 @@ export class QuadNode {
   }
 }
 
-export function QuadTreeSetter({
-  quadTreeRef,
-  objectsRef, 
-  updateQuadTree, 
-}: {
-  quadTreeRef: RefObject<QuadTree>,
-  objectsRef: RefObject<(THREE.Mesh | null)[]>, 
-  updateQuadTree: number, 
-}) {
-
-  useEffect(() => {
-    quadTreeRef.current.clear();
-
-    for (const object of objectsRef.current) {
-      if (object) {
-        quadTreeRef.current.insert(object);
-      }
-    }
-
-    console.log(objectsRef.current.filter((objectTarget) => quadTreeRef.current.extractObjects().find((object) => object.object!.uuid === objectTarget?.uuid)));
-
-    return () => {
-      quadTreeRef.current.clear();
-    }
-  }, [updateQuadTree]);
-
-  return (
-    <></>
-  );
-}
-
 export function QuadTreeHelper({
   quadTree,
   y, 
   boundaryColor, 
   objectBoundaryColor,
-  updateQuadTree,
+  updatedQuadTree,
 }: {
   quadTree: QuadTree,
   y: number, 
   boundaryColor: string, 
   objectBoundaryColor: string,
-  updateQuadTree: number,
+  updatedQuadTree: number,
 }) {
 
-  const {x, z, width, height} = useMemo(() => {
+  const {x, z, width, height, quadTreeObjectsData} = useMemo(() => {
     const x = quadTree.boundary.x;
     const z = quadTree.boundary.y;
     const width = quadTree.boundary.width;
     const height = quadTree.boundary.height;
-    
-    return {x, z, width, height};
-  }, [updateQuadTree]);
 
-  const blueColor = useMemo(() => {
-    return new THREE.Color('blue');
-  }, []);
+    const quadTreeObjectsData = quadTree.objects.map((objectBoundingBox) => {
+
+      return {
+        position: objectBoundingBox.object!.position,
+        width: Math.abs(objectBoundingBox.max.x - objectBoundingBox.min.x),
+        height: Math.abs(objectBoundingBox.max.z - objectBoundingBox.min.z),
+      };
+    });
+    
+    return {x, z, width, height, quadTreeObjectsData};
+  }, [updatedQuadTree]);
 
   return (
     <group>
       {!quadTree.divided && 
         <mesh 
           position={[x, y, z]} 
-          rotation={[Math.PI / 2, 0, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
         >
           <planeGeometry args={[width, height, 1, 1]} />
           <meshBasicMaterial 
@@ -368,28 +439,18 @@ export function QuadTreeHelper({
           />
         </mesh>
       }
-      {quadTree.objects.map((objectBoundingBox, index) => {
-        
-        (objectBoundingBox.object!.material as THREE.MeshBasicMaterial).color = blueColor;
-
-        const objectPosition = objectBoundingBox.object!.position;
-        const objectWidth = Math.abs(objectBoundingBox.max.x - objectBoundingBox.min.x);
-        const objectHeight = Math.abs(objectBoundingBox.max.z - objectBoundingBox.min.z);
-
-        return (
-          <mesh 
-            key={index}
-            position={[objectPosition.x, y, objectPosition.z]}
-            rotation={[Math.PI / 2, 0, 0]}
-          >
-            <planeGeometry args={[objectWidth, objectHeight, 1, 1]} />
-            <meshBasicMaterial 
-              color={objectBoundaryColor}
-              wireframe
-            />
-          </mesh>
-        );
-      })}
+      {quadTreeObjectsData.map((data, index) => (
+        <mesh 
+          key={index}
+          position={[data.position.x, y, data.position.z]}
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
+          <planeGeometry args={[data.width, data.height, 1, 1]} />
+          <meshBasicMaterial 
+            color={objectBoundaryColor}
+          />
+        </mesh>
+      ))}
       {quadTree.childrenNodes.map((childrenNode, index) => {
         return (
           <QuadTreeHelper 
@@ -398,10 +459,16 @@ export function QuadTreeHelper({
             y={y}
             boundaryColor={boundaryColor}
             objectBoundaryColor={objectBoundaryColor}
-            updateQuadTree={updateQuadTree}
+            updatedQuadTree={updatedQuadTree}
           />
         );
       })}
     </group>
   )
+}
+
+export interface ObjectBoundingBox extends THREE.Box3 {
+  object?: THREE.Mesh;
+  parentNode?: QuadTree; 
+  index?: number;
 }
