@@ -73,7 +73,6 @@ function Scene({
   guiParentRef: RefObject<HTMLDivElement>
 }) {
   const [resize, setResize] = useState(0);
-  const [updatedQuadTree, setUpdatedQuadTree] = useState(0);
   
   const { size } = useThree();
   
@@ -82,6 +81,7 @@ function Scene({
     capacity: 4,
     maxDepth: 3
   }));
+  const [updatedQuadTree, setUpdatedQuadTree] = useState(0);
 
   const raycaster = useRef<THREE.Raycaster>(new THREE.Raycaster());
 
