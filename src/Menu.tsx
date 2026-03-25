@@ -106,16 +106,16 @@ function DropDownNav({
   }, [isActive]);
 
   return (
-    <div className={`transform transition-all ease-in-out${navLinkGroup.className ? ` ${navLinkGroup.className}`: ''}`}>
+    <div className={`relative transform transition-all duration-500 ease-in-out${navLinkGroup.className ? ` ${navLinkGroup.className}`: ''}`}>
       <NavLink 
-        className="relative block cursor-pointer hover:underline transform transition-all ease-in-out"
+        className="relative block cursor-pointer hover:underline transform transition-all duration-500 ease-in-out overflow-hidden z-0"
         to={navLinkGroup.path}
         title={navLinkGroup.label}
       >
         <span>{navLinkGroup.label}</span>
         <IconChevronRight className={`absolute top-0 right-0 size-5 transform transition-all ease-in-out${isDropDown ? ' rotate-90' : ''}`} />
       </NavLink>
-      <div className={`flex flex-col transform transition-all duration-500 ease-in-out overflow-hidden${isDropDown ? ' max-h-30': ' max-h-0 pointer-events-none'}`}>
+      <div className={`flex flex-col transform transition-all duration-500 ease-in-out overflow-hidden border-b-2${isDropDown ? ' *:max-h-5 border-b-gray-500': ' *:max-h-0 *:pointer-events-none border-b-transparent'}`}>
         {navLinkGroup.children?.map((navLinkItem, idx) => {
           return navLinkItem.children ? 
             <DropDownNav
@@ -126,10 +126,10 @@ function DropDownNav({
                 className: navLinkItem.className
               }}
               index={index + 1}
-            />
-          : <NavLink
+            /> : 
+            <NavLink
               key={idx}
-              className={`transform transition-all ease-in-out hover:underline${navLinkItem.className ? `${navLinkItem.className}` : ''}`}
+              className={`relative transform transition-all duration-500 ease-in-out hover:underline z-0${navLinkItem.className ? `${navLinkItem.className}` : ''}`}
               to={`${navLinkGroup.path}/${navLinkItem.path}`}
               title={navLinkItem.label}
             >
