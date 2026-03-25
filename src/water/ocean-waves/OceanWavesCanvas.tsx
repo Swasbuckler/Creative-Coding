@@ -1,13 +1,17 @@
 import { OrbitControls, Stats } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, extend, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
-import { Suspense, useEffect, useRef, useState, type RefObject } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import GitHubConnection from "../../lib/components/GitHubConnection";
 import InfoBubble from "../../lib/components/InfoBubble";
 import ThreeJSElementContainer from "../../lib/components/ThreeJSElementContainer";
 import * as THREE from 'three/webgpu';
 import type { WebGPURendererParameters } from "three/src/renderers/webgpu/WebGPURenderer.Nodes.js";
 import ThreeJSSuspenseElement from "../../lib/components/ThreeJSSuspenseElement";
+import { abs, clamp, Fn, length, mix, uv, vec3 } from "three/src/nodes/TSL.js";
+import { MeshBasicNodeMaterial } from "three/webgpu";
+
+extend({MeshBasicNodeMaterial});
 
 export default function OceanWavesCanvas() {
 
@@ -105,6 +109,11 @@ function Scene({
       <group>
         <Ocean />
       </group>
+      <directionalLight 
+        args={['white', 4]}
+        position={[10, 10, 10]} 
+      />
+      <ambientLight args={['white', 0.25]} />
     </Suspense>
   );
 }
@@ -121,9 +130,37 @@ function Ocean() {
 
   const oceanRef = useRef<THREE.Group>(null);
 
+  const { nodes } = useMemo(() => {
+    const gradientNode = Fn(() => {
+      const color1 = vec3(0.01, 0.22, 0.98);
+      const color2 = vec3(0.36, 0.68, 1.0);
+      const t = clamp(length(abs(uv())), 0.0, 0.8);
+      return mix(color1, color2, t);
+    });
+
+    const sphereColorNode = gradientNode();
+
+    return {
+      nodes: {
+        sphereColorNode,
+      },
+    };
+  }, []);
+
   return (
     <group ref={oceanRef}>
-
+      <mesh>
+        <sphereGeometry args={[2.5, 8, 8]} />
+        <meshBasicNodeMaterial
+          colorNode={nodes.sphereColorNode}
+          side={THREE.BackSide}
+        />
+      </mesh>
+      <mesh>
+        <sphereGeometry />
+        <meshStandardMaterial color="white" />
+      </mesh>
     </group>
   );
 }
+
