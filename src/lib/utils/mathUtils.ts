@@ -1,25 +1,34 @@
 import * as THREE from 'three';
 
 export function createRotationXMatrix3(angle: number) {
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+
   return new THREE.Matrix3(
     1, 0, 0,
-    0, Math.cos(angle), -Math.sin(angle),
-    0, Math.sin(angle), Math.cos(angle),
+    0, cosA, -sinA,
+    0, sinA, cosA,
   );
 }
 
 export function createRotationYMatrix3(angle: number) {
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+
   return new THREE.Matrix3(
-    Math.cos(angle), 0, Math.sin(angle),
+    cosA, 0, sinA,
     0, 1, 0,
-    -Math.sin(angle), 0, Math.cos(angle),
+    -sinA, 0, cosA,
   );
 }
 
 export function createRotationZMatrix3(angle: number) {
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+
   return new THREE.Matrix3(
-    Math.cos(angle), -Math.sin(angle), 0,
-    Math.sin(angle), Math.cos(angle), 0,
+    cosA, -sinA, 0,
+    sinA, cosA, 0,
     0, 0, 1,
   );
 }

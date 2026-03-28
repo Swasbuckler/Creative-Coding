@@ -6,6 +6,8 @@ import WaterPage from "./water/home/WaterPage";
 import OceanWavesCanvas from "./water/ocean-waves/OceanWavesCanvas";
 import TestsPage from "./tests/home/TestsPage";
 import QuadTreeCanvas from "./tests/quadtree/QuadTreeCanvas";
+import SpacePage from "./space/home/HomePage";
+import GalaxyCanvas from "./space/galaxy/GalaxyCanvas";
 
 export default function AppRouter() {
 
@@ -18,6 +20,10 @@ export default function AppRouter() {
             <Route index element={<WaterPage />} />
             <Route path="water-caustic" element={<WaterCausticCanvas />} />
             <Route path="ocean-waves" element={<OceanWavesCanvas />} />
+          </Route>
+          <Route path="space">
+            <Route index element={<SpacePage /> } />
+            <Route path="galaxy" element={<GalaxyCanvas />} />
           </Route>
           <Route path="tests">
             <Route index element={<TestsPage /> } />

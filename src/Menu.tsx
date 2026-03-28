@@ -19,6 +19,16 @@ const navLinkGroups: NavLinkGroup[] = [
     ]
   },
   {
+    path: 'space',
+    label: 'Space',
+    children: [
+      {
+        path: 'galaxy',
+        label: 'Galaxy',
+      }
+    ]
+  },
+  {
     path: 'tests',
     label: 'Tests',
     children: [
@@ -115,7 +125,7 @@ function DropDownNav({
         <span>{navLinkGroup.label}</span>
         <IconChevronRight className={`absolute top-0 right-0 size-5 transform transition-all ease-in-out${isDropDown ? ' rotate-90' : ''}`} />
       </NavLink>
-      <div className={`flex flex-col transform transition-all duration-500 ease-in-out overflow-hidden border-b-2${isDropDown ? ' *:max-h-5 border-b-gray-500': ' *:max-h-0 *:pointer-events-none border-b-transparent'}`}>
+      <div className={`flex flex-col transform transition-all duration-500 ease-in-out overflow-hidden border-b-2${isDropDown ? ' *:max-h-5 border-gray-500': ' *:max-h-0 *:pointer-events-none border-transparent'}`}>
         {navLinkGroup.children?.map((navLinkItem, idx) => {
           return navLinkItem.children ? 
             <DropDownNav
