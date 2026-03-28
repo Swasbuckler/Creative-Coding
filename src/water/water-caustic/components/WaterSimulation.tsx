@@ -4,7 +4,7 @@ import { useFBO } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef, type RefObject } from 'react';
 import * as THREE from 'three';
-import { fixedTimeStep, waterResolution, waterSize } from '../constants';
+import { fixedTimeStep, maxFocusedSeconds, waterResolution, waterSize } from '../constants';
 import { dropFragmentShader, moveSphereFragmentShader, normalFragmentShader, updateFragmentShader, waterSimulationVertexShader } from '../shaders/water-simulation';
 import { causticsFragmentShader, causticsVertexShader } from '../shaders/caustics';
 import type { AddDrops, Paused } from '../types';
@@ -190,7 +190,7 @@ export default function WaterSimulation({
       accumulator.current += delta;
 
       while (accumulator.current >= fixedTimeStep) {
-        if (accumulator.current > 5) {
+        if (accumulator.current > maxFocusedSeconds) {
           accumulator.current = fixedTimeStep;
         }
 

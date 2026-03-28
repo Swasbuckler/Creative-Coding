@@ -4,6 +4,7 @@ export const waterSize = 2;
 export const waterResolution = 256;
 
 export const fixedTimeStep = 1 / 60;
+export const maxFocusedSeconds = 5;
 
 export const sphereRadius = 0.25;
 
