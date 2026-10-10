@@ -2,15 +2,15 @@ import { OrbitControls, Stats } from "@react-three/drei";
 import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import GitHubConnection from "../../lib/components/GitHubConnection";
-import InfoBubble from "../../lib/components/InfoBubble";
-import ThreeJSElementContainer from "../../lib/components/ThreeJSElementContainer";
+import GitHubConnection from "../../../lib/components/GitHubConnection";
+import InfoBubble from "../../../lib/components/InfoBubble";
+import ThreeJSElementContainer from "../../../lib/components/ThreeJSElementContainer";
 import * as THREE from 'three/webgpu';
 import type { WebGPURendererParameters } from "three/src/renderers/webgpu/WebGPURenderer.Nodes.js";
-import ThreeJSSuspenseElement from "../../lib/components/ThreeJSSuspenseElement";
+import ThreeJSSuspenseElement from "../../../lib/components/ThreeJSSuspenseElement";
 import { abs, add, cameraPosition, cos, div, float, floor, Fn, instancedArray, instanceIndex, length, min, mix, mul, positionLocal, pow, reciprocal, sin, smoothstep, sub, uniform, uv, vec2, vec3 } from "three/tsl";
 import { InstancedMesh, SpriteNodeMaterial } from "three/webgpu";
-import { hash, lookAtPoint, rotateY } from "../../lib/utils/tslUtils";
+import { hash, lookAtPoint, rotateY } from "../../../lib/utils/tslUtils";
 import { COUNT } from "./constants";
 
 extend({InstancedMesh, SpriteNodeMaterial});
@@ -44,7 +44,7 @@ export default function GalaxyCanvas() {
         </ul>
       </InfoBubble>
       <GitHubConnection 
-        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/space/galaxy"
+        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/pages/space/galaxy"
         position="BOTTOM_RIGHT"
         className="text-gray-400 hover:text-gray-200 hover:scale-110"
       />
@@ -138,37 +138,37 @@ function Galaxy() {
     const positionBuffer = instancedArray(COUNT, 'vec3');
     const densityFactorBuffer = instancedArray(COUNT, 'float');
 
-    const armCount = uniform(4);
-    const galaxyRadius = uniform(50.0);
-    const spiralTightness = uniform(2.0);
-    const armWidth = uniform(8.0);
-    const thickness = uniform(5.0);
-    const randomness = uniform(5.0);
+    const uArmCount = uniform(4);
+    const uGalaxyRadius = uniform(50.0);
+    const uSpiralTightness = uniform(2.0);
+    const uArmWidth = uniform(8.0);
+    const uThickness = uniform(5.0);
+    const uRandomness = uniform(5.0);
 
-    const time = uniform(0);
+    const uTime = uniform(0);
 
-    const scale = uniform(0.8);
+    const uScale = uniform(0.8);
 
     const computeInstancePosition = Fn(({
       instanceIndex,
       positionBuffer,
       densityFactorBuffer,
-      armCount,
-      galaxyRadius,
-      spiralTightness,
-      armWidth,
-      thickness,
-      randomness,
+      uArmCount,
+      uGalaxyRadius,
+      uSpiralTightness,
+      uArmWidth,
+      uThickness,
+      uRandomness,
     }: {
       instanceIndex: THREE.IndexNode,
       positionBuffer: THREE.StorageBufferNode<"vec3">,
       densityFactorBuffer: THREE.StorageBufferNode<"float">,
-      armCount: THREE.UniformNode<"float", number>,
-      galaxyRadius: THREE.UniformNode<"float", number>,
-      spiralTightness: THREE.UniformNode<"float", number>,
-      armWidth: THREE.UniformNode<"float", number>,
-      thickness: THREE.UniformNode<"float", number>,
-      randomness: THREE.UniformNode<"float", number>,
+      uArmCount: THREE.UniformNode<"float", number>,
+      uGalaxyRadius: THREE.UniformNode<"float", number>,
+      uSpiralTightness: THREE.UniformNode<"float", number>,
+      uArmWidth: THREE.UniformNode<"float", number>,
+      uThickness: THREE.UniformNode<"float", number>,
+      uRandomness: THREE.UniformNode<"float", number>,
     }) => {
 
       const index = instanceIndex;
@@ -176,31 +176,31 @@ function Galaxy() {
       
       const amountOfHashes = 5;
 
-      const radius = mul(pow(hash({seed: add(mul(seed, amountOfHashes), 0)}), 0.5), galaxyRadius);
-      const normalizedRadius = div(radius, galaxyRadius);
+      const radius = mul(pow(hash({seed: add(mul(seed, amountOfHashes), 0)}), 0.5), uGalaxyRadius);
+      const normalizedRadius = div(radius, uGalaxyRadius);
 
-      const armIndex = floor(mul(hash({seed: add(mul(seed, amountOfHashes), 1)}), armCount));
-      const armAngle = div(mul(armIndex, 6.28318), armCount);
+      const armIndex = floor(mul(hash({seed: add(mul(seed, amountOfHashes), 1)}), uArmCount));
+      const armAngle = div(mul(armIndex, 6.28318), uArmCount);
 
-      const spiralAngle = mul(mul(normalizedRadius, spiralTightness), 6.28318);
+      const spiralAngle = mul(mul(normalizedRadius, uSpiralTightness), 6.28318);
       const totalAngle = add(armAngle, spiralAngle);
 
-      const radiusOffset = mul(mul(sub(hash({seed: add(mul(seed, amountOfHashes), 2)}), 0.5), 2.0), armWidth);
-      const angleOffset = div(mul(mul(sub(hash({seed: add(mul(seed, amountOfHashes), 3)}), 0.5), 2.0), randomness), add(radius, 1.0));
+      const radiusOffset = mul(mul(sub(hash({seed: add(mul(seed, amountOfHashes), 2)}), 0.5), 2.0), uArmWidth);
+      const angleOffset = div(mul(mul(sub(hash({seed: add(mul(seed, amountOfHashes), 3)}), 0.5), 2.0), uRandomness), add(radius, 1.0));
       const finalAngle = add(totalAngle, angleOffset);
       const finalRadius = add(radius, radiusOffset);
 
       const x = mul(cos(finalAngle), finalRadius);
       const z = mul(sin(finalAngle), finalRadius);
 
-      const maxThickness = mul(thickness, sub(float(1.0), mul(normalizedRadius, 0.7)));
+      const maxThickness = mul(uThickness, sub(float(1.0), mul(normalizedRadius, 0.7)));
       const y = mul(mul(sub(hash({seed: add(mul(seed, amountOfHashes), 4)}), 0.5), 2.0), maxThickness);
 
       const position = vec3(x, y, z);
       positionBuffer.element(index).assign(position);
 
-      const radialSparsity = div(abs(radiusOffset), add(mul(armWidth, 0.5), 0.01));
-      const angularSparsity = div(abs(angleOffset), add(mul(randomness, 0.5), 0.01));
+      const radialSparsity = div(abs(radiusOffset), add(mul(uArmWidth, 0.5), 0.01));
+      const angularSparsity = div(abs(angleOffset), add(mul(uRandomness, 0.5), 0.01));
       const sparsityFactor = min(mul(add(radialSparsity, angularSparsity), 0.5), 1.0);
 
       densityFactorBuffer.element(index).assign(sparsityFactor);
@@ -210,24 +210,24 @@ function Galaxy() {
       instanceIndex,
       positionBuffer,
       densityFactorBuffer,
-      armCount,
-      galaxyRadius,
-      spiralTightness,
-      armWidth,
-      thickness,
-      randomness,
+      uArmCount,
+      uGalaxyRadius,
+      uSpiralTightness,
+      uArmWidth,
+      uThickness,
+      uRandomness,
     }).compute(COUNT);
 
     const updatePosition = Fn(({
       position,
       positionLocal,
       cameraPosition,
-      time,
+      uTime,
     }: {
       position: THREE.Node<"vec3">,
       positionLocal: THREE.AttributeNode<"vec3">,
       cameraPosition: THREE.UniformNode<"vec3", THREE.Vector3>,
-      time: THREE.UniformNode<"float", number>,
+      uTime: THREE.UniformNode<"float", number>,
     }) => {
 
       const distFromCenter = length(vec2(position.x, position.z));
@@ -243,7 +243,7 @@ function Galaxy() {
       const velocityAmount = length(velocity);
 
       const rotationFactor = reciprocal(add(mul(distFromCenter, 0.5), velocityAmount));
-      const rotationAmount = mul(rotationFactor, time);
+      const rotationAmount = mul(rotationFactor, uTime);
 
       const newPosition = rotateY({
         point: position, 
@@ -264,7 +264,7 @@ function Galaxy() {
       position: positionBuffer.element(instanceIndex),
       positionLocal: positionLocal,
       cameraPosition: cameraPosition,
-      time,
+      uTime,
     })
 
     const starShape = Fn(() => {
@@ -288,7 +288,9 @@ function Galaxy() {
       return starColor;
     });
 
-    const colorNode = starColor({densityFactor: densityFactorBuffer.element(instanceIndex)});
+    const colorNode = starColor({
+      densityFactor: densityFactorBuffer.element(instanceIndex)
+    });
 
     return {
       nodes: {
@@ -298,14 +300,14 @@ function Galaxy() {
         colorNode,
       },
       uniforms: {
-        armCount,
-        galaxyRadius,
-        spiralTightness,
-        armWidth,
-        thickness,
-        randomness,
-        time,
-        scale,
+        uArmCount,
+        uGalaxyRadius,
+        uSpiralTightness,
+        uArmWidth,
+        uThickness,
+        uRandomness,
+        uTime,
+        uScale,
       },
     };
   }, []);
@@ -327,7 +329,7 @@ function Galaxy() {
   useFrame((state) => {
     const { clock } = state
 
-    uniforms.time.value = clock.getElapsedTime();
+    uniforms.uTime.value = clock.getElapsedTime();
   });
 
   return (
@@ -341,7 +343,7 @@ function Galaxy() {
           positionNode={nodes.positionNode}
           opacityNode={nodes.opacityNode}
           colorNode={nodes.colorNode}
-          scaleNode={uniforms.scale}
+          scaleNode={uniforms.uScale}
           blending={THREE.AdditiveBlending}
           transparent
           depthWrite={false}

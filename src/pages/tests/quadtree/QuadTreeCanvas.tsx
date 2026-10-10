@@ -2,12 +2,12 @@ import { OrbitControls, Stats } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
 import { Suspense, useEffect, useRef, useState, type RefObject } from "react";
-import GitHubConnection from "../../lib/components/GitHubConnection";
-import InfoBubble from "../../lib/components/InfoBubble";
-import ThreeJSElementContainer from "../../lib/components/ThreeJSElementContainer";
+import GitHubConnection from "../../../lib/components/GitHubConnection";
+import InfoBubble from "../../../lib/components/InfoBubble";
+import ThreeJSElementContainer from "../../../lib/components/ThreeJSElementContainer";
 import * as THREE from 'three/webgpu';
-import ThreeJSSuspenseElement from "../../lib/components/ThreeJSSuspenseElement";
-import { QuadNode, QuadTree, QuadTreeHelper } from "../../lib/utils/QuadTree";
+import ThreeJSSuspenseElement from "../../../lib/components/ThreeJSSuspenseElement";
+import { QuadNode, QuadTree, QuadTreeHelper } from "../../../lib/utils/QuadTree";
 
 export default function QuadTreeCanvas() {
 
@@ -35,7 +35,7 @@ export default function QuadTreeCanvas() {
         </ul>
       </InfoBubble>
       <GitHubConnection 
-        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/tests/quadtree"
+        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/pages/tests/quadtree"
         position="BOTTOM_RIGHT"
         className="text-gray-400 hover:text-gray-200 hover:scale-110"
       />

@@ -1,7 +1,7 @@
 import { IconChevronRight, IconLayoutSidebarLeftExpandFilled, IconX } from "@tabler/icons-react";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { NavLink, Outlet, useMatch } from "react-router";
-import type { NavLinkGroup } from "./lib/utils/types";
+import type { NavLinkGroup } from "./lib/types/appTypes";
 
 const navLinkGroups: NavLinkGroup[] = [
   {
@@ -11,6 +11,10 @@ const navLinkGroups: NavLinkGroup[] = [
       {
         path: 'water-caustic',
         label: 'Water Caustic (Port of Evanw)',
+      },
+      {
+        path: 'water-caustic-ex',
+        label: 'Water Caustic',
       },
       {
         path: 'ocean-waves',
@@ -25,6 +29,16 @@ const navLinkGroups: NavLinkGroup[] = [
       {
         path: 'galaxy',
         label: 'Galaxy',
+      }
+    ]
+  },
+  {
+    path: 'rendering',
+    label: 'Rendering',
+    children: [
+      {
+        path: 'path-tracing',
+        label: 'Path Tracing',
       }
     ]
   },

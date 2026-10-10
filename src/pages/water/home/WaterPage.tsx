@@ -1,4 +1,4 @@
-import GitHubConnection from "../../lib/components/GitHubConnection";
+import GitHubConnection from "../../../lib/components/GitHubConnection";
 
 export default function WaterPage() {
 
@@ -8,7 +8,7 @@ export default function WaterPage() {
         <span>Water Page. This Page Group contains Renders and Experiences related to Water. *This Page is a Work in Progress</span>
       </div>
       <GitHubConnection
-        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/water/home"
+        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/pages/water/home"
         position="BOTTOM_RIGHT"
         className="text-gray-400 hover:text-gray-200 hover:scale-110"
       />

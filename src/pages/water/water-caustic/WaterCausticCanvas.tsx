@@ -8,13 +8,13 @@ import Water from "./components/Water";
 import { sphereFragmentShader, sphereVertexShader } from "./shaders/sphere";
 import { wallFragmentShader, wallVertexShader } from "./shaders/wall";
 import GUI from "lil-gui";
-import { createRotationXMatrix3, createRotationYMatrix3, createRotationZMatrix3, dotProductMatrix3Vector } from "../../lib/utils/mathUtils";
+import { createRotationXMatrix3, createRotationYMatrix3, createRotationZMatrix3, dotProductMatrix3Vector } from "../../../lib/utils/mathUtils";
 import type { AddDrops, Paused } from "./types";
 import { lightDir, sphereCenter, sphereRadius } from "./constants";
-import GitHubConnection from "../../lib/components/GitHubConnection";
-import ThreeJSElementContainer from "../../lib/components/ThreeJSElementContainer";
-import InfoBubble from "../../lib/components/InfoBubble";
-import ThreeJSSuspenseElement from "../../lib/components/ThreeJSSuspenseElement";
+import GitHubConnection from "../../../lib/components/GitHubConnection";
+import ThreeJSElementContainer from "../../../lib/components/ThreeJSElementContainer";
+import InfoBubble from "../../../lib/components/InfoBubble";
+import ThreeJSSuspenseElement from "../../../lib/components/ThreeJSSuspenseElement";
 
 export default function WaterCausticCanvas() {
 
@@ -55,7 +55,7 @@ export default function WaterCausticCanvas() {
         </ul>
       </InfoBubble>
       <GitHubConnection 
-        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/water/water-caustic"
+        url="https://github.com/Swasbuckler/Creative-Coding/tree/main/src/pages/water/water-caustic"
         position="BOTTOM_RIGHT"
         className="text-gray-400 hover:text-gray-200 hover:scale-110"
       />
