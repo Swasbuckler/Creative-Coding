@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu';
-import type { Bin, DataNode, LightDataObject, MaterialObject, MeshType, ObjectUpdaterData, TLASData, TriangleDataObject } from '../types/pathTracingTypes';
-import { add, and, array, bool, Break, ceil, Continue, div, EPSILON, float, floor, Fn, If, INFINITY, int, inverse, length, Loop, mat4, mul, normalize, or, Return, round, select, struct, sub, transformDirection, trunc, uint, vec2, vec3, vec4 } from 'three/tsl';
+import type { Bin, DataNode, LightDataObject, MaterialObject, MeshType, ObjectUpdaterData, TLASData } from '../types/pathTracingTypes';
+import { add, and, array, Break, Continue, div, float, Fn, If, INFINITY, int, inverse, length, Loop, mat4, mul, or, select, struct, sub, transformDirection, vec2, vec3, vec4 } from 'three/tsl';
 import { boundingBoxIntersect, triangleIntersect, TriangleIntersectStruct } from './tslUtils';
 import { combination2P3Digits } from './mathUtils';
 
@@ -501,7 +501,7 @@ export function createTLAS(meshList: THREE.Mesh[]) {
   const tlasData = buildTLAS(meshList)
   const {tlasArray, tlasList} = createTLASArray(tlasData)
 
-  const {triangleArray, bvhArray, lightArray} = generateArraysFromTLAS(tlasData, tlasList)
+  const {triangleArray, bvhArray, lightArray} = generateArraysFromTLAS(tlasData)
 
   return {tlasData, tlasArray, tlasList, triangleArray, bvhArray, lightArray}
 
@@ -723,7 +723,7 @@ export function createTLASArray(tlas: TLASData) {
   return {tlasArray, tlasList}
 }
 
-export function generateArraysFromTLAS(tlas: TLASData, tlasList: Float32Array) {
+export function generateArraysFromTLAS(tlas: TLASData) {
   let triangleIndex = 0
   let bvhIndex = 0
   let lightIndex = 0
@@ -883,107 +883,6 @@ export function updateTLAS(tlas: TLASData, updatedIds: Record<number, ObjectUpda
   if (fullUpdate) return true
   return false
 }
-
-const TlasDataStruct = struct({
-  nodeData1: "vec4",
-  nodeData2: "vec4",
-  nodeData3: "vec4",
-  nodeData4: "vec4",
-  nodeData5: "vec4",
-  nodeData6: "vec4",
-  nodeData7: "vec4",
-})
-
-const getTlasData = Fn(({
-  tlasArray,
-  index,
-}: {
-  tlasArray: THREE.StorageBufferNode<"vec4">,
-  index: THREE.Node<"int">,
-}) => {
-  const nodeData1 = vec4(tlasArray.element(index));
-  const nodeData2 = vec4(tlasArray.element(add(index, 1)));
-  const nodeData3 = vec4(tlasArray.element(add(index, 2)));
-  const nodeData4 = vec4(tlasArray.element(add(index, 3)));
-  const nodeData5 = vec4(tlasArray.element(add(index, 4)));
-  const nodeData6 = vec4(tlasArray.element(add(index, 5)));
-  const nodeData7 = vec4(tlasArray.element(add(index, 6)));
-
-  return TlasDataStruct(nodeData1, nodeData2, nodeData3, nodeData4, nodeData5, nodeData6, nodeData7);
-});
-
-
-const BvhDataStruct = struct({
-  nodeData1: "vec4",
-  nodeData2: "vec4",
-})
-
-const getBvhData = Fn(({
-  bvhArray,
-  index,
-}: {
-  bvhArray: THREE.StorageBufferNode<"vec4">,
-  index: THREE.Node<"int">,
-}) => {
-  const nodeData1 = vec4(bvhArray.element(index));
-  const nodeData2 = vec4(bvhArray.element(add(index, 1)));
-
-  return BvhDataStruct(nodeData1, nodeData2);
-});
-
-const TriangleArrayPositionDataStruct = struct({
-  nodeData1: "vec4",
-  nodeData2: "vec4",
-  nodeData3: "vec4",
-})
-
-const getTriangleArrayPositionData = Fn(({
-  triangleArray,
-  index,
-}: {
-  triangleArray: THREE.StorageBufferNode<"vec4">,
-  index: THREE.Node<"int">,
-}) => {
-  const nodeData1 = vec4(triangleArray.element(index));
-  const nodeData2 = vec4(triangleArray.element(add(index, 1)));
-  const nodeData3 = vec4(triangleArray.element(add(index, 2)));
-
-  return TriangleArrayPositionDataStruct(nodeData1, nodeData2, nodeData3);
-});
-
-const TriangleArrayDataStruct = struct({
-  nodeData1: "vec4",
-  nodeData2: "vec4",
-  nodeData3: "vec4",
-  nodeData4: "vec4",
-  nodeData5: "vec4",
-  nodeData6: "vec4",
-  nodeData7: "vec4",
-  nodeData8: "vec4",
-  nodeData9: "vec4",
-  nodeData10: "vec4",
-})
-
-const getTriangleArrayData = Fn(({
-  triangleArray,
-  index,
-}: {
-  triangleArray: THREE.StorageBufferNode<"vec4">,
-  index: THREE.Node<"int">,
-}) => {
-  const nodeData1 = vec4(triangleArray.element(index));
-  const nodeData2 = vec4(triangleArray.element(add(index, 1)));
-  const nodeData3 = vec4(triangleArray.element(add(index, 2)));
-  const nodeData4 = vec4(triangleArray.element(add(index, 3)));
-  const nodeData5 = vec4(triangleArray.element(add(index, 4)));
-  const nodeData6 = vec4(triangleArray.element(add(index, 5)));
-  const nodeData7 = vec4(triangleArray.element(add(index, 6)));
-  const nodeData8 = vec4(triangleArray.element(add(index, 7)));
-  const nodeData9 = vec4(triangleArray.element(add(index, 8)));
-  const nodeData10 = vec4(triangleArray.element(add(index, 9)));
-
-  return TriangleArrayDataStruct(nodeData1, nodeData2, nodeData3, nodeData4, nodeData5, nodeData6, nodeData7, nodeData8, nodeData9, nodeData10);
-});
 
 export const BvhIntersectStruct = struct({
   triangleUVW: "vec3",

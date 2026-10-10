@@ -1,4 +1,4 @@
-import { useFrame, useThree } from "@react-three/fiber"
+import { useThree } from "@react-three/fiber"
 import { createContext, useContext, useEffect, useRef, type RefObject } from "react"
 
 type DeltaContextType = {

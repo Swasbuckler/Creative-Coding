@@ -1,4 +1,4 @@
-import { Environment, MeshTransmissionMaterial, OrbitControls, Stats, useFBO } from "@react-three/drei";
+import { Environment, OrbitControls, Stats, useFBO } from "@react-three/drei";
 import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
@@ -9,9 +9,8 @@ import * as THREE from 'three/webgpu';
 import type { WebGPURendererParameters } from "three/src/renderers/webgpu/WebGPURenderer.Nodes.js";
 import ThreeJSSuspenseElement from "../../../lib/components/ThreeJSSuspenseElement";
 import { InstancedMesh, MeshStandardNodeMaterial, MeshBasicNodeMaterial, MeshPhysicalNodeMaterial } from "three/webgpu";
-import { abs, add, ceil, cos, cross, div, dot, exp, float, floor, Fn, If, instancedArray, instanceIndex, int, length, lessThan, mul, negate, normalize, PI, positionGeometry, positionLocal, pow, round, sin, sqrt, storage, storageTexture, sub, texture, textureLoad, textureStore, uniform, uv, uvec2, vec2, vec3, vec4 } from "three/tsl";
-import { gravity, textureResolution } from "./constants";
-import { phillips, hash, gaussianNoise, hTilde, dispersion } from "../../../lib/utils/tslUtils";
+import { uniform } from "three/tsl";
+import { textureResolution } from "./constants";
 
 extend({InstancedMesh, MeshStandardNodeMaterial, MeshBasicNodeMaterial, MeshPhysicalNodeMaterial});
 
@@ -87,7 +86,7 @@ function Scene({
   const [resize, setResize] = useState(0);
   const [causticsLight] = useState(() => new THREE.Vector3(5, 5, 5));
   
-  const { size, gl } = useThree();
+  const { size, } = useThree();
   
   useEffect(() => {
     setResize((value) => value + 1);
@@ -142,7 +141,7 @@ function Water({
 
   const gl = useThree((state) => (state.gl as any)) as THREE.WebGPURenderer;
   
-  const { nodes, uniforms } = useMemo(() => {
+  const { uniforms } = useMemo(() => {
     
     const uTime = uniform(0);
 
@@ -180,13 +179,13 @@ function Water({
 
   }, [renderTarget, normalCamera, normalMaterial]);
 
-  const compute = useCallback(async () => {
+  /*const compute = useCallback(async () => {
     try {
       //await gl.computeAsync(nodes.computeNode);
     } catch (error) {
       console.error(error);
     }
-  }, [/*nodes.computeNode,*/ gl]);
+  }, [/*nodes.computeNode, gl]);*/
 
   /*useEffect(() => {
     if (!waterRef.current) return;
@@ -195,7 +194,7 @@ function Water({
   }, [compute]);*/
 
   useFrame((state) => {
-    const { clock, gl } = state;
+    const { clock, } = state;
 
     renderCaustic();
 

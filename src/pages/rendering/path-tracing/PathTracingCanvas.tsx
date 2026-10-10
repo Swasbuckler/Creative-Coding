@@ -1,7 +1,7 @@
-import { Environment, Instance, Instances, OrbitControls, OrthographicCamera, PerspectiveCamera, Stats, useFBO } from "@react-three/drei";
-import { Canvas, extend, useFrame, useThree, type CameraProps } from "@react-three/fiber";
+import { OrbitControls, Stats, useFBO } from "@react-three/drei";
+import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import GitHubConnection from "../../../lib/components/GitHubConnection";
 import InfoBubble from "../../../lib/components/InfoBubble";
 import ThreeJSElementContainer from "../../../lib/components/ThreeJSElementContainer";
@@ -9,11 +9,11 @@ import * as THREE from 'three/webgpu';
 import type { WebGPURendererParameters } from "three/src/renderers/webgpu/WebGPURenderer.Nodes.js";
 import ThreeJSSuspenseElement from "../../../lib/components/ThreeJSSuspenseElement";
 import { MeshPhysicalNodeMaterial } from "three/webgpu";
-import { abs, add, array, cameraPosition, cameraWorldMatrix, clamp, cos, div, float, floor, Fn, hash, If, instancedArray, instanceIndex, int, length, mat4, max, min, mix, mod, mul, negate, not, PI, positionGeometry, positionLocal, positionWorld, pow, reciprocal, screenCoordinate, screenUV, sin, smoothstep, storage, sub, texture, textureSize, textureStore, uint, uniform, uniformArray, uniformTexture, uv, uvec2, varying, vec2, vec3, vec4 } from "three/tsl";
+import { add, cameraPosition, cameraWorldMatrix, div, Fn, If, int, max, mul, positionGeometry, storage, sub, texture, uniform, uniformTexture, uv, vec2, vec3, vec4 } from "three/tsl";
 import { arraySize, maxArraySize } from "./constants";
-import { generateRayFromCamaraAndUV, boundingBoxIntersect, globalSeed2, rng2, hash2, rng, bvhPathTrace } from "../../../lib/utils/tslUtils";
-import { bvhIntersect, createBvh, createTLAS, createTLASArray, generateArraysFromTLAS, updateTLAS } from "../../../lib/utils/bvhUtils";
-import { createFixedArray, float32ArrayToVec4Array, createFixedFloat32Array, resolutions, compareCameraData } from "../../../lib/utils/mathUtils";
+import { generateRayFromCamaraAndUV, globalSeed2, bvhPathTrace } from "../../../lib/utils/tslUtils";
+import { createTLAS, createTLASArray, generateArraysFromTLAS, updateTLAS } from "../../../lib/utils/bvhUtils";
+import { createFixedFloat32Array, resolutions, compareCameraData } from "../../../lib/utils/mathUtils";
 import type { CameraData, ObjectUpdaterData, TLASData } from "../../../lib/types/pathTracingTypes";
 import { FrameLimiter, useDelta } from "../../../lib/components/FrameLimiter";
 import { TeapotGeometry } from "three/examples/jsm/Addons.js";
@@ -92,7 +92,7 @@ function PathTracingScene({
 
   const [resize, setResize] = useState(0);
   
-  const { size, gl } = useThree();
+  const { size } = useThree();
   
   useEffect(() => {
     //console.log(window.innerWidth, window.innerHeight)
@@ -103,7 +103,7 @@ function PathTracingScene({
   
     const gui = new GUI({container: guiParentRef.current});
 
-    const optionsFolder = gui.addFolder('Path Tracing');
+    //const optionsFolder = gui.addFolder('Path Tracing');
 
     return () => {
       gui.destroy();
@@ -128,7 +128,7 @@ function PathTracingScene({
 
 function WorldScene() {
 
-  const orthographicCamera = useRef<THREE.OrthographicCamera>(new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1));
+  //const orthographicCamera = useRef<THREE.OrthographicCamera>(new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1));
   const perspectiveCamera = useRef<THREE.PerspectiveCamera>(null);
 
   const { delta } = useDelta()
@@ -179,7 +179,7 @@ function WorldScene() {
 
   const gl = useThree((state) => (state.gl as any)) as THREE.WebGPURenderer;
 
-  const { scene, setDpr } = useThree()
+  const { setDpr } = useThree()
   
   const { nodes, uniforms } = useMemo(() => {
     
@@ -197,11 +197,11 @@ function WorldScene() {
     const lightArray = new THREE.StorageBufferAttribute(createFixedFloat32Array(maxArraySize), 4);
 
     const uTlasArray = storage(tlasArray, 'vec4', maxArraySize);
-    const uTlasList = storage(tlasList, 'vec4', arraySize);
+    //const uTlasList = storage(tlasList, 'vec4', arraySize);
     const uTriangleArray = storage(triangleArray, 'vec4', maxArraySize);
     const uBvhArray = storage(bvhArray, 'vec4', maxArraySize);
-    const uLightArray = storage(lightArray, 'vec4', maxArraySize);
-
+    //const uLightArray = storage(lightArray, 'vec4', maxArraySize);
+    
     //const storageTexture = new THREE.StorageTexture(width, height);
 
     //const uFrameCount = uniform(0);
@@ -231,10 +231,10 @@ function WorldScene() {
       
       pixelColour.assign(bvhPathTrace({
         tlasArray: uTlasArray,
-        tlasList: uTlasList,
+        //tlasList: uTlasList,
         triangleArray: uTriangleArray,
         bvhArray: uBvhArray,
-        lightArray: uLightArray,
+        //lightArray: uLightArray,
         rayOrigin,
         rayDirection,
         maxBounces: int(4),
@@ -391,7 +391,7 @@ function WorldScene() {
   const testingRef = useRef<number>(0);
 
   useFrame((state) => {
-    const { scene, clock } = state;
+    const { clock } = state;
     testingRef.current++
     const oldTarget = renderTargetRef.current;
     const newTarget = renderTargetRef.current === renderTargetA ? renderTargetB : renderTargetA;
@@ -427,7 +427,7 @@ function WorldScene() {
     uniforms.tlasList.needsUpdate = true
     
     if (fullUpdate) {
-      const {triangleArray, bvhArray, lightArray} = generateArraysFromTLAS(tlasDataRef.current, tlasList)
+      const {triangleArray, bvhArray, lightArray} = generateArraysFromTLAS(tlasDataRef.current)
       uniforms.triangleArray.set(triangleArray);
       uniforms.triangleArray.needsUpdate = true
       uniforms.bvhArray.set(bvhArray);

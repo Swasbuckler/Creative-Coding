@@ -9,9 +9,9 @@ import * as THREE from 'three/webgpu';
 import type { WebGPURendererParameters } from "three/src/renderers/webgpu/WebGPURenderer.Nodes.js";
 import ThreeJSSuspenseElement from "../../../lib/components/ThreeJSSuspenseElement";
 import { InstancedMesh, MeshStandardNodeMaterial, MeshBasicNodeMaterial } from "three/webgpu";
-import { abs, add, ceil, cos, cross, div, dot, exp, float, floor, Fn, If, instancedArray, instanceIndex, int, length, lessThan, mul, negate, normalize, PI, positionGeometry, positionLocal, pow, round, sin, sqrt, storage, storageTexture, sub, texture, textureLoad, textureStore, uint, uniform, uv, uvec2, vec2, vec3, vec4 } from "three/tsl";
+import { add, cos, float, Fn, instanceIndex, mul, negate, sin, storageTexture, textureLoad, textureStore, uint, uniform, uv, uvec2, vec2, vec3, vec4 } from "three/tsl";
 import { CHUNK_RESOLUTION, gravity } from "./constants";
-import { phillips, hash, gaussianNoise, hTilde, dispersion } from "../../../lib/utils/tslUtils";
+import { hTilde, dispersion } from "../../../lib/utils/tslUtils";
 
 extend({InstancedMesh, MeshStandardNodeMaterial, MeshBasicNodeMaterial});
 

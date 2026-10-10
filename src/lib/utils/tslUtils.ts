@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu';
-import { abs, acos, add, and, array, atan, Break, cameraPosition, cameraWorldMatrix, clamp, cos, cross, distance, div, dot, EPSILON, equal, exp, float, floor, Fn, fract, If, INFINITY, int, inverse, inverseSqrt, length, log, Loop, mat4, max, min, mix, mul, negate, normalize, oneMinus, or, PI, PI2, pow, radians, reciprocal, Return, select, sign, sin, sqrt, struct, sub, tan, uvec2, vec2, vec3, vec4 } from "three/tsl";
+import { abs, add, and, array, atan, Break, clamp, cos, cross, div, dot, EPSILON, exp, float, floor, Fn, fract, If, INFINITY, int, inverseSqrt, length, log, Loop, mat4, max, min, mix, mul, negate, normalize, oneMinus, PI, pow, radians, reciprocal, select, sin, sqrt, struct, sub, tan, uvec2, vec2, vec3, vec4 } from "three/tsl";
 import { bvhIntersect, BvhIntersectStruct } from './bvhUtils';
 
 // Global Variables
@@ -468,19 +468,19 @@ export const triangleIntersect = Fn(({
 
 export const bvhPathTrace = Fn(({
   tlasArray,
-  tlasList,
+  //tlasList,
   triangleArray,
   bvhArray,
-  lightArray,
+  //lightArray,
   rayOrigin,
   rayDirection,
   maxBounces,
 }: {
   tlasArray: THREE.StorageBufferNode<"vec4">,
-  tlasList: THREE.StorageBufferNode<"vec4">,
+  //tlasList: THREE.StorageBufferNode<"vec4">,
   triangleArray: THREE.StorageBufferNode<"vec4">,
   bvhArray: THREE.StorageBufferNode<"vec4">,
-  lightArray: THREE.StorageBufferNode<"vec4">,
+  //lightArray: THREE.StorageBufferNode<"vec4">,
   rayOrigin: THREE.Node<"vec3">,
   rayDirection: THREE.Node<"vec3">,
   maxBounces: THREE.Node<"int">,
@@ -503,17 +503,17 @@ export const bvhPathTrace = Fn(({
   const throughput = vec3(1).toVar()
   const weights = vec4(0).toVar()
   const probabilities = vec4(0).toVar()
-  const pdf = vec3(1).toVar()
+  //const pdf = vec3(1).toVar()
   
   const smoothness = vec2(0).toVar()
   const tangent = vec3(0).toVar()
   const biTangent = vec3(0).toVar()
 
   const diffuse = vec3(0).toVar()
-  const specular = vec3(0).toVar()
+  /*const specular = vec3(0).toVar()
   const sheen = vec3(0).toVar()
   const clearcoat = vec3(0).toVar()
-  const transmission = vec3(0).toVar()
+  const transmission = vec3(0).toVar()*/
 
   const emitted = vec3(0).toVar()
   const indirect = vec3(0).toVar()
@@ -552,7 +552,7 @@ export const bvhPathTrace = Fn(({
     hitData5.assign(bvhIntersectObject.get("hitData5"));
     hitData6.assign(bvhIntersectObject.get("hitData6"));
     t.assign(bvhIntersectObject.get("t"));
-
+    i
     If(t.equal(INFINITY), () => {
       Break()
     })
@@ -1123,19 +1123,13 @@ export const distributionGTR = Fn(({
 
 export const distributionTrowbridge = Fn(({
   roughness,
-  normal,
-  rayDirection,
-  lightDirection,
   r1,
 }: {
   roughness: THREE.Node<"float">,
-  normal: THREE.Node<"vec3">,
-  rayDirection: THREE.Node<"vec3">,
-  lightDirection: THREE.Node<"vec3">,
   r1: THREE.Node<"float">,
 }) => {
   const alphaSquared = pow(mul(roughness, roughness), 2).toVar()
-  const halfwayVector = normalize(add(lightDirection, negate(rayDirection))).toVar()
+
   const theta = atan(mul(mul(roughness, roughness), sqrt(div(r1, sub(1, r1))))).toVar()
   //return div(alphaSquared, mul(PI, pow(add(mul(pow(dot(normal, halfwayVector), 2), sub(alphaSquared, 1)), 1), 2)))
   return max(0, sub(div(alphaSquared, add(mul(pow(cos(theta), 2), pow(sub(alphaSquared, 1), 2)), sub(alphaSquared, 1))), div(1, sub(alphaSquared, 1))))
