@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu';
-import { abs, add, and, array, atan, Break, clamp, cos, cross, div, dot, EPSILON, exp, float, floor, Fn, fract, If, INFINITY, int, inverseSqrt, length, log, Loop, mat4, max, min, mix, mul, negate, normalize, oneMinus, PI, pow, radians, reciprocal, select, sin, sqrt, struct, sub, tan, uvec2, vec2, vec3, vec4 } from "three/tsl";
+import { abs, add, and, array, atan, Break, clamp, cos, cross, div, dot, EPSILON, exp, float, floor, Fn, fract, If, INFINITY, int, length, lengthSq, log, Loop, mat4, max, min, mix, mul, negate, normalize, oneMinus, PI, pow, radians, reciprocal, select, sin, sqrt, struct, sub, tan, uvec2, vec2, vec3, vec4 } from "three/tsl";
 import { bvhIntersect, BvhIntersectStruct } from './bvhUtils';
 
 // Global Variables
@@ -468,19 +468,19 @@ export const triangleIntersect = Fn(({
 
 export const bvhPathTrace = Fn(({
   tlasArray,
-  //tlasList,
+  tlasList,
   triangleArray,
   bvhArray,
-  //lightArray,
+  lightArray,
   rayOrigin,
   rayDirection,
   maxBounces,
 }: {
   tlasArray: THREE.StorageBufferNode<"vec4">,
-  //tlasList: THREE.StorageBufferNode<"vec4">,
+  tlasList: THREE.StorageBufferNode<"vec4">,
   triangleArray: THREE.StorageBufferNode<"vec4">,
   bvhArray: THREE.StorageBufferNode<"vec4">,
-  //lightArray: THREE.StorageBufferNode<"vec4">,
+  lightArray: THREE.StorageBufferNode<"vec4">,
   rayOrigin: THREE.Node<"vec3">,
   rayDirection: THREE.Node<"vec3">,
   maxBounces: THREE.Node<"int">,
@@ -552,7 +552,7 @@ export const bvhPathTrace = Fn(({
     hitData5.assign(bvhIntersectObject.get("hitData5"));
     hitData6.assign(bvhIntersectObject.get("hitData6"));
     t.assign(bvhIntersectObject.get("t"));
-    i
+    
     If(t.equal(INFINITY), () => {
       Break()
     })
@@ -892,6 +892,18 @@ export const bvhPathTrace = Fn(({
 
     currentRayOrigin.assign(nextRayOrigin)
     currentRayDirection.assign(nextRayDirection)
+
+    /*If(i.greaterThanEqual(1), () => {
+      extraFloat.assign(clamp(getLuminance({
+        color: throughput,
+      }), 0.05, 1))
+
+      If(randomData.x.greaterThan(extraFloat), () => {
+        Break()
+      }).Else(() => {
+        throughput.divAssign(extraFloat)
+      })
+    })*/
 
   });
 
@@ -1245,7 +1257,26 @@ export const getHalfwayVectorWithGGX = Fn(({
   randomData: THREE.Node<"vec2">,
 }) => {
 
-  const rayDirectionLocal = vec3(abs(dot(rayDirection, tangent)), abs(dot(rayDirection, biTangent)), abs(dot(rayDirection, normal))).toVar()
+  const wh = normalize(vec3(mul(rayDirection.x, smoothness.x), mul(rayDirection.y, smoothness.y), rayDirection.z)).toVar()
+
+  If(wh.z.lessThan(0), () => {
+    wh.z.assign(negate(wh.z))
+  })
+
+  const T1 = select<"vec3">(wh.z.lessThan(0.99999), normalize(cross(vec3(0, 0, 1), wh)), vec3(1, 0, 0)).toVar()
+  const T2 = cross(wh, T1).toVar()
+
+  const p = sampleUniformDiskPolar({random: randomData}).toVar()
+
+  const h = sqrt(sub(1, mul(p.x, p.x)))
+  p.y.assign(mix(div(add(1, wh.z), 2), h, p.y))
+
+  const pz = sqrt(max(0, sub(1, lengthSq(p)))).toVar()
+  const nh = add(mul(p.x, T1), add(mul(p.y, T2), mul(pz, wh))).toVar()
+
+  return normalize(vec3(mul(smoothness.x, nh.x), mul(smoothness.y, nh.y), max(EPSILON, nh.z)))
+
+  /*const rayDirectionLocal = vec3(abs(dot(rayDirection, tangent)), abs(dot(rayDirection, biTangent)), abs(dot(rayDirection, normal))).toVar()
 
   const vh = normalize(vec3(mul(rayDirectionLocal.x, smoothness.x), mul(rayDirectionLocal.y, smoothness.y), rayDirectionLocal.z)).toVar()
 
@@ -1269,7 +1300,7 @@ export const getHalfwayVectorWithGGX = Fn(({
     add(mul(ne.x, tangent.z), add(mul(ne.y, biTangent.z), mul(ne.z, normal.z))),
   )).toVar()
 
-  return h
+  return h*/
 })
 
 export const getSpecularReflectance = Fn(({
@@ -1290,10 +1321,10 @@ export const getLuminance = Fn(({
   color: THREE.Node<"vec3">,
 }) => {
 
-  return dot(color, vec3(0.2126, 0.7152, 0.0722));
+  return dot(color, luminance);
 });
 
-const checkFloatsEqual = Fn(({
+export const checkFloatsEqual = Fn(({
   a,
   b,
 }: {
@@ -1303,3 +1334,13 @@ const checkFloatsEqual = Fn(({
 
   return abs(sub(b, a)).lessThan(EPSILON);
 });
+
+export const sampleUniformDiskPolar = Fn(({
+  random,
+}: {
+  random: THREE.Node<"vec2">,
+}) => {
+  const r = sqrt(random.x).toVar();
+  const theta = mul(mul(2, PI), random.y).toVar();
+  return vec2(mul(r, cos(theta), mul(r, sin(theta))));
+})

@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+import { HashRouter, Navigate, Route, Routes } from "react-router";
 import Menu from "./Menu";
 import HomePage from "./pages/home/HomePage";
 import WaterCausticCanvas from "./pages/water/water-caustic/WaterCausticCanvas";
@@ -15,7 +15,7 @@ import PathTracingCanvas from "./pages/rendering/path-tracing/PathTracingCanvas"
 export default function AppRouter() {
 
   return (
-    <BrowserRouter basename={import.meta.env.VITE_PUBLIC_BASE_URL + '/'}>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Menu />}>
           <Route index element={<HomePage />} />
@@ -40,6 +40,6 @@ export default function AppRouter() {
         </Route>
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

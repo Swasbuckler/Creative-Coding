@@ -197,10 +197,10 @@ function WorldScene() {
     const lightArray = new THREE.StorageBufferAttribute(createFixedFloat32Array(maxArraySize), 4);
 
     const uTlasArray = storage(tlasArray, 'vec4', maxArraySize);
-    //const uTlasList = storage(tlasList, 'vec4', arraySize);
+    const uTlasList = storage(tlasList, 'vec4', arraySize);
     const uTriangleArray = storage(triangleArray, 'vec4', maxArraySize);
     const uBvhArray = storage(bvhArray, 'vec4', maxArraySize);
-    //const uLightArray = storage(lightArray, 'vec4', maxArraySize);
+    const uLightArray = storage(lightArray, 'vec4', maxArraySize);
     
     //const storageTexture = new THREE.StorageTexture(width, height);
 
@@ -227,14 +227,14 @@ function WorldScene() {
       const rayDirection = vec3(rayDir).toVar();
       const pixelColour = vec3(0).toVar();
 
-      globalSeed2.assign(mul(vec2(uSampleCount, add(uSampleCount, 1)), add(uv(), 1)));
+      globalSeed2.assign(mul(vec2(mul(123, uSampleCount), add(mul(123, uSampleCount), 1)), add(uv(), 1)));
       
       pixelColour.assign(bvhPathTrace({
         tlasArray: uTlasArray,
-        //tlasList: uTlasList,
+        tlasList: uTlasList,
         triangleArray: uTriangleArray,
         bvhArray: uBvhArray,
-        //lightArray: uLightArray,
+        lightArray: uLightArray,
         rayOrigin,
         rayDirection,
         maxBounces: int(4),
@@ -459,54 +459,68 @@ function WorldScene() {
   return (
     <>
       <group ref={groupRef}>
-        {/*<mesh position={[0, 1.5, 0]}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshPhysicalMaterial color="white" />
-        </mesh>*/}
-        {/*Array.from({length: 1}, (_, i) => i + 1).map(() => (
-          <mesh position={[1.5, 0, 0]} rotation={[-Math.PI * 0.5, 0, 0]}>
-            <planeGeometry args={[5, 5]} />
-            <meshPhysicalMaterial color="gray" />
-          </mesh>
-        ))*/}
-        <mesh position={[-1.75, 3, 0]} rotation={[0, Math.PI * 0.5, Math.PI * 0.5]}>
-          <planeGeometry args={[6, 6]} />
-          <meshPhysicalMaterial color={[0, 1, 0]} emissiveIntensity={0} roughness={1} metalness={0} transmission={0} specularIntensity={0} userData={{
+        <mesh position={[0, 0, 0]} rotation={[-Math.PI * 0.5, 0, 0]}>
+          <planeGeometry args={[5, 5]} />
+          <meshPhysicalMaterial color="white" emissiveIntensity={0} roughness={1} metalness={0} transmission={0} specularIntensity={0} userData={{
             subsurface: 0
           }} />
         </mesh>
-        <mesh position={[0, 0, 0]} rotation={[-Math.PI * 0.5, 0, 0]}>
-          <planeGeometry args={[20, 20]} />
-          <meshPhysicalMaterial color={[1, 0.1, 0.1]} emissiveIntensity={0} roughness={1} metalness={0} transmission={0} specularIntensity={0} userData={{
+        <mesh position={[-2.5, 2.5, 0]} rotation={[0, Math.PI * 0.5, Math.PI * 0.5]}>
+          <planeGeometry args={[5, 5]} />
+          <meshPhysicalMaterial color="white" emissiveIntensity={0} roughness={1} metalness={0} transmission={0} specularIntensity={0} userData={{
+            subsurface: 0
+          }} />
+        </mesh>
+        <mesh position={[0, 2.5, 2.5]} rotation={[0, 0, Math.PI * 0.5]}>
+          <planeGeometry args={[5, 5]} />
+          <meshPhysicalMaterial color={[0.70, 0.25, 0.25]} emissiveIntensity={0} roughness={1} metalness={0} transmission={0} specularIntensity={0} userData={{
+            subsurface: 0
+          }} />
+        </mesh>
+        <mesh position={[0, 2.5, -2.5]} rotation={[0, -Math.PI, Math.PI * 0.5]}>
+          <planeGeometry args={[5, 5]} />
+          <meshPhysicalMaterial color={[0.28, 0.63, 0.30]} emissiveIntensity={0} roughness={1} metalness={0} transmission={0} specularIntensity={0} userData={{
+            subsurface: 0
+          }} />
+        </mesh>
+        <mesh position={[0, 5, 0]} rotation={[Math.PI * 0.5, 0, 0]}>
+          <planeGeometry args={[5, 5]} />
+          <meshPhysicalMaterial color="white" emissiveIntensity={0} roughness={1} metalness={0} transmission={0} specularIntensity={0} userData={{
             subsurface: 0
           }} />
         </mesh>
         <pointLight position={[0, 5, 0]} color="white" intensity={10} />
-        <mesh position={[0, 5, 2.5]} rotation={[Math.PI * 0.5, 0, 0]}>
-          <planeGeometry args={[3, 3]} />
-          <meshPhysicalMaterial color="white" emissiveIntensity={5} emissive="white" />
+        <mesh position={[0, 4.99, 0]} rotation={[Math.PI * 0.5, 0, 0]}>
+          <planeGeometry args={[1, 1]} />
+          <meshPhysicalMaterial color={[0.99, 0.95, 0.8]} emissiveIntensity={20} emissive="white" />
         </mesh>
-        <mesh position={[0, 5, -2.5]} rotation={[Math.PI * 0.5, 0, 0]}>
-          <planeGeometry args={[3, 3]} />
-          <meshPhysicalMaterial color="white" emissiveIntensity={5} emissive="white" />
+        <mesh ref={boxRef} position={[1.3, 0.75, -0.65]} rotation={[0, -Math.PI * 0.1, 0]}>
+          <boxGeometry args={[1.5, 1.5, 1.5]} />
+          <meshPhysicalMaterial 
+            color="white" 
+            emissiveIntensity={0} 
+            roughness={1} 
+            metalness={0} 
+            transmission={0} 
+            specularIntensity={0}
+            userData={{
+              subsurface: 0
+            }} 
+          />
         </mesh>
-        {/*<mesh position={[2.5, 2.5, 0]} rotation={[0, -Math.PI * 0.5, 0]}>
-          <planeGeometry args={[5, 5]} />
-          <meshPhysicalMaterial color="white" />
-        </mesh>
-        <mesh position={[0, 2.5, -2.5]}>
-          <planeGeometry args={[5, 5]} />
-          <meshPhysicalMaterial color="white" />
-        </mesh>
-        <mesh position={[-2.5, 2.5, 0]} rotation={[0, Math.PI * 0.5, 0]}>
-          <planeGeometry args={[5, 5]} />
-          <meshPhysicalMaterial color={[0.18, 0.18, 0.18]} />
-        </mesh>*/}
-        <mesh ref={boxRef} position={[0, 1, 0]} rotation={[0, Math.PI * 0.5, 0]}>
-          <teapotGeometry args={[1]} />
-          <meshPhysicalMaterial color={[1, 1, 1]} emissiveIntensity={0} roughness={1} metalness={0} transmission={0} specularIntensity={0} userData={{
-            subsurface: 0
-          }} />
+        <mesh ref={boxRef} position={[-1, 1.5, 1]} rotation={[0, Math.PI * 0.1, 0]}>
+          <boxGeometry args={[1.5, 3, 1.5]} />
+          <meshPhysicalMaterial 
+            color="white" 
+            emissiveIntensity={0} 
+            roughness={0} 
+            metalness={0} 
+            transmission={0} 
+            specularIntensity={0}
+            userData={{
+              subsurface: 0
+            }} 
+          />
         </mesh>
         {/*<Instances limit={100} position={[0, 1, 0]}>
           <boxGeometry />
@@ -531,10 +545,11 @@ function WorldScene() {
         <meshBasicMaterial side={THREE.DoubleSide} />
       </mesh>
       <OrbitControls
+        target={[0, 1.5, 0]}
         enableDamping={false}
         ref={(node) => {
           perspectiveCamera.current = node?.object as THREE.PerspectiveCamera || null;
-          if (perspectiveCamera.current) perspectiveCamera.current.position.set(6, 0.5, 6)
+          if (perspectiveCamera.current) perspectiveCamera.current.position.set(8, 2.5, 0)
           //if (perspectiveCamera.current) perspectiveCamera.current.fov = 90
         }}
       />
